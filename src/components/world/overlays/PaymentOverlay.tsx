@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { sharedSagaEngine } from "@/lib/simulations/simulationInstances";
 import { BookingTransaction, LedgerEntry } from "@/lib/simulations/sagaFsm";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export default function PaymentOverlay() {
   const [currentTx, setCurrentTx] = useState<BookingTransaction | null>(null);
@@ -60,9 +61,15 @@ export default function PaymentOverlay() {
           <h2 className="text-xl sm:text-2xl font-bold font-sans text-[#E6E8EB] tracking-tight">
             Payment Engine / Movie Ticket Booking
           </h2>
-          <span className="text-xs text-[#878F99] bg-[#0A0B0D] px-2.5 py-1 border border-[#1F242C] rounded-[2px] w-fit">
-            REPO: [PLACEHOLDER]
-          </span>
+          <a
+            href="https://github.com/RishiRaj0128/Cinebook-Movie-Booking-Platform_Rishi_Raj"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-[#C86D32] hover:text-[#E6E8EB] bg-[#0A0B0D] px-2.5 py-1 border border-[#1F242C] hover:border-[#C86D32] rounded-[2px] w-fit flex items-center gap-1.5 transition-colors"
+          >
+            <span>REPO: Cinebook-Movie-Booking-Platform_Rishi_Raj</span>
+            <ExternalLinkIcon size={11} />
+          </a>
         </div>
         <p className="text-xs text-[#878F99] font-sans mt-1">
           Jul–Aug 2026 • Java, Spring Boot, MySQL, Python, REST APIs, LLM APIs, Vector DBs (FAISS, ChromaDB)

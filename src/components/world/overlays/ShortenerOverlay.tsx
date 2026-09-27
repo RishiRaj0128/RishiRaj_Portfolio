@@ -58,7 +58,7 @@ export default function ShortenerOverlay() {
             URL Shortener & Real Click Analytics
           </h2>
           <span className="text-xs text-[#878F99] bg-[#0A0B0D] px-2.5 py-1 border border-[#1F242C] rounded-[2px] w-fit">
-            REPO: [PLACEHOLDER]
+            SOURCE: PRIVATE REPOSITORY (AVAILABLE UPON REQUEST)
           </span>
         </div>
         <p className="text-xs text-[#878F99] font-sans mt-1">
