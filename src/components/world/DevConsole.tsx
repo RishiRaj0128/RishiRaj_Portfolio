@@ -1,0 +1,275 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import { NETWORK_NODES, NetworkNodeDef } from "@/lib/world/worldTopology";
+import { soundFx } from "@/lib/audio/soundFx";
+
+interface DevConsoleProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onExecuteGoto: (node: NetworkNodeDef) => void;
+  onOpenContact: () => void;
+  onOpenLegal: (type: "terms" | "privacy") => void;
+}
+
+interface LogEntry {
+  type: "input" | "output" | "error" | "info";
+  text: string;
+}
+
+export default function DevConsole({
+  isOpen,
+  onClose,
+  onExecuteGoto,
+  onOpenContact,
+  onOpenLegal,
+}: DevConsoleProps) {
+  const [command, setCommand] = useState("");
+  const [history, setHistory] = useState<LogEntry[]>([
+    { type: "info", text: "UPLINK DEVELOPER CONSOLE // v2.4.0-rev3" },
+    { type: "info", text: "Type 'help' to inspect commands or 'list' to view available nodes." },
+    { type: "info", text: "Screen-reader and keyboard accessible navigation layer." },
+  ]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Auto-focus input when console is opened
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
+  }, [isOpen]);
+
+  // Scroll to bottom on output
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
+  // Global backtick and ESC listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "`" || e.key === "~") {
+        e.preventDefault();
+        if (isOpen) {
+          onClose();
+        }
+      }
+      if (e.key === "Escape" && isOpen) {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const handleCommandSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const raw = command.trim();
+    if (!raw) return;
+
+    soundFx.playKeyClick();
+    const newHistory: LogEntry[] = [...history, { type: "input", text: `> ${raw}` }];
+    const parts = raw.split(" ");
+    const cmd = parts[0].toLowerCase();
+    const arg = parts.slice(1).join(" ").toLowerCase();
+
+    switch (cmd) {
+      case "help":
+        newHistory.push({
+          type: "output",
+          text: `SUPPORTED COMMANDS:
+  goto <node>     Teleport probe to node and open section overlay
+  list            List all navigable nodes and coordinates
+  contact         Open direct contact transmission portal
+  resume          Download Rishi Raj engineering resume
+  terms           View Terms of Service legal terms
+  privacy         View Privacy Policy terms
+  clear           Clear terminal output buffer
+  help            Show this command manual`,
+        });
+        break;
+
+      case "list":
+        const nodeList = NETWORK_NODES.map(
+          (n) => `  ${n.id.padEnd(14)} ${n.label.padEnd(25)} [${n.position[0]}, ${n.position[2]}]`
+        ).join("\n");
+        newHistory.push({
+          type: "output",
+          text: `AVAILABLE NETWORK NODES:\n${nodeList}`,
+        });
+        break;
+
+      case "goto":
+        if (!arg) {
+          newHistory.push({
+            type: "error",
+            text: "ERROR: Missing node identifier. Example: 'goto broker' or 'goto status'.",
+          });
+        } else {
+          const target = NETWORK_NODES.find(
+            (n) =>
+              n.id.toLowerCase() === arg ||
+              n.id.toLowerCase().includes(arg) ||
+              n.name.toLowerCase().includes(arg)
+          );
+          if (target) {
+            newHistory.push({
+              type: "info",
+              text: `TELEPORTING PROBE TO: ${target.label} [${target.position[0]}, ${target.position[2]}]...`,
+            });
+            setTimeout(() => {
+              onExecuteGoto(target);
+              onClose();
+            }, 300);
+          } else {
+            newHistory.push({
+              type: "error",
+              text: `ERROR: Node '${arg}' not recognized. Type 'list' to view valid node names.`,
+            });
+          }
+        }
+        break;
+
+      case "contact":
+        newHistory.push({ type: "info", text: "OPENING CONTACT TRANSMISSION OVERLAY..." });
+        setTimeout(() => {
+          onOpenContact();
+          onClose();
+        }, 200);
+        break;
+
+      case "resume":
+        newHistory.push({
+          type: "output",
+          text: "DISPATCHING RESUME: Initiating download of Rishi Raj Technical Resume (PDF)...",
+        });
+        if (typeof window !== "undefined") {
+          window.open("https://github.com/RishiRaj0128", "_blank");
+        }
+        break;
+
+      case "terms":
+        newHistory.push({ type: "info", text: "DISPLAYING TERMS OF SERVICE..." });
+        onOpenLegal("terms");
+        onClose();
+        break;
+
+      case "privacy":
+        newHistory.push({ type: "info", text: "DISPLAYING PRIVACY POLICY..." });
+        onOpenLegal("privacy");
+        onClose();
+        break;
+
+      case "clear":
+        setHistory([]);
+        setCommand("");
+        return;
+
+      default:
+        newHistory.push({
+          type: "error",
+          text: `ERROR: Unrecognized command '${cmd}'. Type 'help' for valid commands.`,
+        });
+        break;
+    }
+
+    setHistory(newHistory);
+    setCommand("");
+  };
+
+  return (
+    <div
+      role="dialog"
+      aria-label="Developer In-Fiction Console"
+      aria-modal="true"
+      className="fixed inset-0 z-50 bg-[#0A0B0D]/85 flex flex-col justify-start p-4 sm:p-8 font-mono backdrop-blur-none"
+    >
+      <div className="w-full max-w-4xl mx-auto bg-[#111317] border border-[#2D3440] rounded-[2px] flex flex-col h-[75vh] max-h-[700px] overflow-hidden">
+        {/* Console Header Bar */}
+        <div className="p-3 bg-[#171B22] border-b border-[#1F242C] flex justify-between items-center text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-[1px] bg-[#C86D32]" />
+            <span className="text-[#E6E8EB] font-bold">UPLINK DEVELOPER CONSOLE</span>
+            <span className="text-[#5A626E] hidden sm:inline">[ACCESSIBILITY & FAST TRAVEL]</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-[#878F99]">TOGGLE KEY: [ ` ]</span>
+            <button
+              onClick={onClose}
+              className="text-[#878F99] hover:text-[#E6E8EB] px-2 py-0.5 border border-[#1F242C] hover:border-[#2D3440] rounded-[2px] text-xs"
+            >
+              CLOSE [ESC]
+            </button>
+          </div>
+        </div>
+
+        {/* Output Stream History */}
+        <div
+          tabIndex={0}
+          aria-live="polite"
+          className="flex-1 p-4 overflow-y-auto space-y-2 text-xs text-[#E6E8EB] focus:outline-none"
+        >
+          {history.map((entry, idx) => (
+            <div key={idx} className="whitespace-pre-wrap leading-relaxed">
+              {entry.type === "input" && (
+                <span className="text-[#C86D32] font-semibold">{entry.text}</span>
+              )}
+              {entry.type === "output" && (
+                <span className="text-[#E6E8EB]">{entry.text}</span>
+              )}
+              {entry.type === "error" && (
+                <span className="text-[#C24545]">{entry.text}</span>
+              )}
+              {entry.type === "info" && (
+                <span className="text-[#878F99]">{entry.text}</span>
+              )}
+            </div>
+          ))}
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Quick Suggestion Chips */}
+        <div className="px-4 py-2 border-t border-[#1F242C] bg-[#0A0B0D] flex flex-wrap gap-2 text-[11px]">
+          <span className="text-[#5A626E] py-0.5">QUICK:</span>
+          {["goto broker", "goto payment", "goto shortener", "goto status", "contact", "list", "help"].map((q) => (
+            <button
+              key={q}
+              onClick={() => {
+                setCommand(q);
+                inputRef.current?.focus();
+              }}
+              className="px-2 py-0.5 bg-[#171B22] border border-[#1F242C] hover:border-[#C86D32] hover:text-[#E6E8EB] text-[#878F99] rounded-[2px]"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+
+        {/* Command Input Field */}
+        <form onSubmit={handleCommandSubmit} className="p-3 bg-[#111317] border-t border-[#2D3440] flex items-center gap-2">
+          <span className="text-[#C86D32] font-bold text-sm">{">"}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            placeholder="Type command ('goto broker', 'list', 'help')..."
+            className="flex-1 bg-transparent text-[#E6E8EB] focus:outline-none text-xs placeholder:text-[#5A626E]"
+            aria-label="Console command prompt"
+          />
+          <button
+            type="submit"
+            className="px-3 py-1 bg-[#C86D32] text-[#0A0B0D] font-bold text-xs rounded-[2px] hover:bg-[#e07b39]"
+          >
+            EXECUTE
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
