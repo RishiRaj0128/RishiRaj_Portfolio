@@ -9,9 +9,16 @@ import { NETWORK_NODES, NETWORK_CONDUITS, NetworkNodeDef } from "@/lib/world/wor
 interface NodeStructuresProps {
   onNodeClick: (node: NetworkNodeDef) => void;
   activeNodeId: string | null;
+  visitedNodeIds?: string[];
+  securitySeverity?: "ok" | "warn" | "err";
 }
 
-export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStructuresProps) {
+export default function NodeStructures3D({
+  onNodeClick,
+  activeNodeId,
+  visitedNodeIds = [],
+  securitySeverity = "warn",
+}: NodeStructuresProps) {
   // Conduit packet pulse animation
   const pulseGroupRef = useRef<THREE.Group>(null);
 
@@ -56,23 +63,30 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
   // Conduit packet animation
   useFrame((state) => {
     if (!pulseGroupRef.current) return;
-    const t = state.clock.elapsedTime * 0.4;
+    const t = state.clock.elapsedTime * 0.45;
     pulseGroupRef.current.children.forEach((child, idx) => {
       const conduit = conduitsData[idx % conduitsData.length];
       if (conduit) {
-        const progress = (t + idx * 0.15) % 1.0;
+        const isVisited =
+          visitedNodeIds.includes(conduit.fromId) || visitedNodeIds.includes(conduit.toId);
+        const speedMultiplier = isVisited ? 1.4 : 1.0;
+        const progress = (t * speedMultiplier + idx * 0.15) % 1.0;
         const pt = conduit.curve.getPoint(progress);
         child.position.copy(pt);
       }
     });
   });
 
+  const securityColor =
+    securitySeverity === "ok"
+      ? "#2FA866"
+      : securitySeverity === "err"
+      ? "#C24545"
+      : "#C88D32";
+
   return (
     <group>
-      {/* 
-        GROUND PLANE & NETWORK TOPOLOGY BUS GRID
-        Subtle architectural grid with 1px-equivalent borders, zero dot grids (Rule #16)
-      */}
+      {/* GROUND PLANE & NETWORK TOPOLOGY BUS GRID */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
         <planeGeometry args={[260, 260, 32, 32]} />
         <meshStandardMaterial
@@ -111,18 +125,23 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
         </group>
       ))}
 
-      {/* Animated Conduit Lines connecting nodes */}
+      {/* Animated Conduit Lines connecting nodes with PERSISTENT VISITED LIGHTING */}
       {conduitsData.map((conduit, idx) => {
+        const isVisitedConduit =
+          visitedNodeIds.includes(conduit.fromId) && visitedNodeIds.includes(conduit.toId);
+        const isPartiallyVisited =
+          visitedNodeIds.includes(conduit.fromId) || visitedNodeIds.includes(conduit.toId);
+
         const lineGeom = new THREE.BufferGeometry().setFromPoints(conduit.points);
         return (
           <line key={idx}>
             <bufferGeometry attach="geometry" {...lineGeom} />
             <lineBasicMaterial
               attach="material"
-              color="#2D3440"
+              color={isVisitedConduit ? "#C86D32" : isPartiallyVisited ? "#8A542A" : "#2D3440"}
               transparent
-              opacity={0.65}
-              linewidth={1}
+              opacity={isVisitedConduit ? 0.95 : isPartiallyVisited ? 0.75 : 0.45}
+              linewidth={isVisitedConduit ? 2 : 1}
             />
           </line>
         );
@@ -130,17 +149,23 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
 
       {/* Data Packet Pulses traveling along conduits */}
       <group ref={pulseGroupRef}>
-        {conduitsData.map((_, idx) => (
-          <mesh key={idx}>
-            <boxGeometry args={[0.3, 0.15, 0.5]} />
-            <meshBasicMaterial color="#C86D32" />
-          </mesh>
-        ))}
+        {conduitsData.map((conduit, idx) => {
+          const isVisitedConduit =
+            visitedNodeIds.includes(conduit.fromId) || visitedNodeIds.includes(conduit.toId);
+          return (
+            <mesh key={idx}>
+              <boxGeometry args={[0.3, 0.15, 0.5]} />
+              <meshBasicMaterial color={isVisitedConduit ? "#C86D32" : "#5A626E"} />
+            </mesh>
+          );
+        })}
       </group>
 
       {/* 3D NODE STRUCTURES */}
       {NETWORK_NODES.map((node) => {
         const isCurrent = activeNodeId === node.id;
+        const isVisited = visitedNodeIds.includes(node.id);
+
         return (
           <group
             key={node.id}
@@ -153,13 +178,13 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
               if (typeof document !== "undefined") document.body.style.cursor = "auto";
             }}
           >
-            {/* Ground Proximity Docking Ring */}
+            {/* Ground Proximity Docking Ring with Persistent Visited Glow */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
               <ringGeometry args={[node.dockingRadius - 0.4, node.dockingRadius, 48]} />
               <meshBasicMaterial
-                color={isCurrent ? "#C86D32" : "#1F242C"}
+                color={isCurrent ? "#C86D32" : isVisited ? "#8F4B1E" : "#1F242C"}
                 transparent
-                opacity={isCurrent ? 0.9 : 0.4}
+                opacity={isCurrent ? 0.95 : isVisited ? 0.7 : 0.35}
                 side={THREE.DoubleSide}
               />
             </mesh>
@@ -168,7 +193,7 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
               <circleGeometry args={[2.5, 32]} />
               <meshBasicMaterial
-                color={isCurrent ? "#362216" : "#111419"}
+                color={isCurrent ? "#362216" : isVisited ? "#1A1512" : "#111419"}
                 transparent
                 opacity={0.8}
               />
@@ -176,7 +201,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
 
             {/* NODE ARCHITECTURAL GEOMETRIES */}
             {node.id === "ingress" && (
-              // Ingress: Central Portal & Beacon Gateway
               <group position={[0, 0, 0]}>
                 <mesh position={[0, 2.5, 0]}>
                   <torusGeometry args={[2.2, 0.18, 12, 32]} />
@@ -191,7 +215,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "status" && (
-              // Status: 6 hexagonal service towers cluster
               <group position={[0, 0, 0]}>
                 {[0, 1, 2, 3, 4, 5].map((i) => {
                   const angle = (i / 6) * Math.PI * 2;
@@ -215,7 +238,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "broker" && (
-              // Broker: 5 Raft broker pillars connected by a ring bus
               <group position={[0, 0, 0]}>
                 <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 1.5, 0]}>
                   <torusGeometry args={[1.9, 0.1, 8, 32]} />
@@ -243,7 +265,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "payment" && (
-              // Payment: Dual-column ledger monolith
               <group position={[0, 0, 0]}>
                 <mesh position={[-0.9, 2.0, 0]}>
                   <boxGeometry args={[0.8, 4.0, 1.2]} />
@@ -261,7 +282,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "shortener" && (
-              // Shortener: High-speed hash tower with rotating glyph ring
               <group position={[0, 0, 0]}>
                 <mesh position={[0, 2.2, 0]}>
                   <octahedronGeometry args={[1.4, 0]} />
@@ -275,7 +295,6 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "achievements" && (
-              // Achievements: Hexagonal pedestal & milestone obelisk
               <group position={[0, 0, 0]}>
                 <mesh position={[0, 0.4, 0]}>
                   <cylinderGeometry args={[1.8, 2.2, 0.8, 6]} />
@@ -289,22 +308,27 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
             )}
 
             {node.id === "security" && (
-              // Security: Hardened firewall barrier monolith
+              // Security: Hardened firewall monolith with dynamic severity tinting
               <group position={[0, 0, 0]}>
                 <mesh position={[0, 1.8, 0]}>
                   <boxGeometry args={[3.2, 3.6, 0.6]} />
                   <meshStandardMaterial color="#171B22" metalness={0.9} roughness={0.3} />
                 </mesh>
-                {/* Yellow/amber caution perimeter line */}
+                {/* Dynamic severity caution perimeter line */}
                 <mesh position={[0, 1.8, 0.35]}>
-                  <planeGeometry args={[2.8, 0.12]} />
-                  <meshBasicMaterial color="#C88D32" />
+                  <planeGeometry args={[2.8, 0.16]} />
+                  <meshBasicMaterial color={securityColor} />
                 </mesh>
+                {/* Perimeter warning beacon */}
+                <mesh position={[0, 3.8, 0]}>
+                  <sphereGeometry args={[0.15, 12, 12]} />
+                  <meshBasicMaterial color={securityColor} />
+                </mesh>
+                <pointLight position={[0, 4.0, 0]} color={securityColor} intensity={1.4} distance={8} />
               </group>
             )}
 
             {node.id === "contact" && (
-              // Contact: High-gain parabolic uplink dish
               <group position={[0, 0, 0]}>
                 <mesh position={[0, 1.0, 0]}>
                   <cylinderGeometry args={[0.3, 0.5, 2.0, 8]} />
@@ -322,7 +346,7 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
               </group>
             )}
 
-            {/* FLOATING 3D BILLBOARD TEXT / LABEL (Legible from distance) */}
+            {/* FLOATING 3D BILLBOARD TEXT / LABEL */}
             <Html
               position={[0, 4.4, 0]}
               center
@@ -334,23 +358,32 @@ export default function NodeStructures3D({ onNodeClick, activeNodeId }: NodeStru
                 className={`flex flex-col items-center px-2 py-1 rounded-[2px] border text-center transition-all ${
                   isCurrent
                     ? "bg-[#111317] border-[#C86D32] shadow-none"
+                    : isVisited
+                    ? "bg-[#111317]/95 border-[#8F4B1E]"
                     : "bg-[#0A0B0D]/90 border-[#1F242C]"
                 }`}
                 style={{ fontFamily: "var(--font-mono), monospace" }}
               >
                 <div className="flex items-center gap-1.5 text-[10px]">
                   <span
-                    className={`inline-block w-1.5 h-1.5 rounded-[1px] ${
-                      node.status === "ACTIVE"
-                        ? "bg-[#2FA866]"
-                        : node.status === "PENDING_AUDIT"
-                        ? "bg-[#C88D32]"
-                        : "bg-[#C86D32]"
-                    }`}
+                    className="inline-block w-1.5 h-1.5 rounded-[1px]"
+                    style={{
+                      backgroundColor:
+                        node.id === "security"
+                          ? securityColor
+                          : node.status === "ACTIVE"
+                          ? "#2FA866"
+                          : "#C86D32",
+                    }}
                   />
                   <span className="font-bold text-[#E6E8EB] tracking-wider text-[11px] whitespace-nowrap">
                     {node.label}
                   </span>
+                  {isVisited && (
+                    <span className="text-[9px] text-[#C86D32] font-semibold tracking-tighter">
+                      [VISITED]
+                    </span>
+                  )}
                 </div>
                 <div className="text-[9px] text-[#878F99] whitespace-nowrap">
                   {node.sublabel}

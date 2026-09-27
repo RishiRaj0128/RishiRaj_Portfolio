@@ -17,6 +17,8 @@ interface LogEntry {
   text: string;
 }
 
+const TOP_LEVEL_COMMANDS = ["goto", "list", "contact", "resume", "terms", "privacy", "clear", "help"];
+
 export default function DevConsole({
   isOpen,
   onClose,
@@ -28,8 +30,15 @@ export default function DevConsole({
   const [history, setHistory] = useState<LogEntry[]>([
     { type: "info", text: "UPLINK DEVELOPER CONSOLE // v2.4.0-rev3" },
     { type: "info", text: "Type 'help' to inspect commands or 'list' to view available nodes." },
+    { type: "info", text: "Controls: [↑/↓] Command History • [Tab] Autocomplete • [`/ESC] Close" },
     { type: "info", text: "Screen-reader and keyboard accessible navigation layer." },
   ]);
+
+  // Command history buffer for ArrowUp / ArrowDown
+  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const [historyPointer, setHistoryPointer] = useState<number>(-1);
+  const draftCommand = useRef<string>("");
+
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +74,56 @@ export default function DevConsole({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Input KeyDown Handler (ArrowUp / ArrowDown for history, Tab for autocomplete)
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (cmdHistory.length === 0) return;
+
+      const nextPointer = historyPointer + 1;
+      if (nextPointer < cmdHistory.length) {
+        if (historyPointer === -1) {
+          draftCommand.current = command;
+        }
+        setHistoryPointer(nextPointer);
+        setCommand(cmdHistory[cmdHistory.length - 1 - nextPointer]);
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyPointer > 0) {
+        const nextPointer = historyPointer - 1;
+        setHistoryPointer(nextPointer);
+        setCommand(cmdHistory[cmdHistory.length - 1 - nextPointer]);
+      } else if (historyPointer === 0) {
+        setHistoryPointer(-1);
+        setCommand(draftCommand.current);
+      }
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      const current = command.trim();
+      if (!current) return;
+
+      // Autocomplete 'goto <node>'
+      if (current.startsWith("goto ") || current === "goto") {
+        const arg = current.replace("goto", "").trim().toLowerCase();
+        const matchingNode = NETWORK_NODES.find(
+          (n) => n.id.toLowerCase().startsWith(arg) || n.name.toLowerCase().startsWith(arg)
+        );
+        if (matchingNode) {
+          setCommand(`goto ${matchingNode.id}`);
+          soundFx.playKeyClick();
+        }
+      } else {
+        // Autocomplete top-level commands
+        const match = TOP_LEVEL_COMMANDS.find((cmd) => cmd.startsWith(current.toLowerCase()));
+        if (match) {
+          setCommand(match === "goto" ? "goto " : match);
+          soundFx.playKeyClick();
+        }
+      }
+    }
+  };
+
   if (!isOpen) return null;
 
   const handleCommandSubmit = (e: React.FormEvent) => {
@@ -73,6 +132,11 @@ export default function DevConsole({
     if (!raw) return;
 
     soundFx.playKeyClick();
+
+    // Append to command history
+    setCmdHistory((prev) => [...prev, raw]);
+    setHistoryPointer(-1);
+
     const newHistory: LogEntry[] = [...history, { type: "input", text: `> ${raw}` }];
     const parts = raw.split(" ");
     const cmd = parts[0].toLowerCase();
@@ -250,7 +314,7 @@ export default function DevConsole({
           ))}
         </div>
 
-        {/* Command Input Field */}
+        {/* Command Input Field with Arrow History & Tab Autocomplete */}
         <form onSubmit={handleCommandSubmit} className="p-3 bg-[#111317] border-t border-[#2D3440] flex items-center gap-2">
           <span className="text-[#C86D32] font-bold text-sm">{">"}</span>
           <input
@@ -258,7 +322,8 @@ export default function DevConsole({
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
-            placeholder="Type command ('goto broker', 'list', 'help')..."
+            onKeyDown={handleInputKeyDown}
+            placeholder="Type command ('goto broker', 'list', 'help') • [Tab] autocomplete..."
             className="flex-1 bg-transparent text-[#E6E8EB] focus:outline-none text-xs placeholder:text-[#5A626E]"
             aria-label="Console command prompt"
           />

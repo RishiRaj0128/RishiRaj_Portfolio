@@ -17,6 +17,8 @@ interface UplinkHUDProps {
   isDocked: boolean;
   onUndock: () => void;
   onTouchInput: (controls: { thrust: number; steer: number }) => void;
+  visitedNodeIds?: string[];
+  handshakeState?: { node: NetworkNodeDef; step: 1 | 2 | 3 } | null;
 }
 
 export default function UplinkHUD({
@@ -26,11 +28,14 @@ export default function UplinkHUD({
   isDocked,
   onUndock,
   onTouchInput,
+  visitedNodeIds = [],
+  handshakeState = null,
 }: UplinkHUDProps) {
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [showQuickJump, setShowQuickJump] = useState(false);
   const [hasUserPiloted, setHasUserPiloted] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [hoveredNode, setHoveredNode] = useState<NetworkNodeDef | null>(null);
 
   // Detect touch devices
   useEffect(() => {
@@ -112,27 +117,44 @@ export default function UplinkHUD({
               onClick={() => setShowQuickJump((prev) => !prev)}
               className="px-2 py-1 bg-[#0A0B0D] border border-[#1F242C] text-[#878F99] hover:border-[#2D3440] hover:text-[#E6E8EB] rounded-[2px]"
             >
-              NODES [{NETWORK_NODES.length}]
+              NODES [{visitedNodeIds.length}/{NETWORK_NODES.length}]
             </button>
 
             {showQuickJump && (
               <div className="absolute right-0 top-full mt-1 w-64 bg-[#111317] border border-[#2D3440] rounded-[2px] p-1.5 space-y-1 z-50">
-                <div className="text-[10px] text-[#5A626E] px-2 py-0.5 border-b border-[#1F242C]">
-                  SELECT NODE TO TELEPORT
+                <div className="text-[10px] text-[#5A626E] px-2 py-0.5 border-b border-[#1F242C] flex justify-between">
+                  <span>TELEPORT TO NODE</span>
+                  <span>VISITED: {visitedNodeIds.length}</span>
                 </div>
-                {NETWORK_NODES.map((n) => (
-                  <button
-                    key={n.id}
-                    onClick={() => {
-                      onTeleportToNode(n);
-                      setShowQuickJump(false);
-                    }}
-                    className="w-full text-left px-2 py-1 text-[11px] text-[#878F99] hover:text-[#E6E8EB] hover:bg-[#1E232C] rounded-[2px] flex justify-between items-center"
-                  >
-                    <span>{n.label}</span>
-                    <span className="text-[9px] text-[#5A626E]">{n.port}</span>
-                  </button>
-                ))}
+                {NETWORK_NODES.map((n) => {
+                  const isVisited = visitedNodeIds.includes(n.id);
+                  return (
+                    <button
+                      key={n.id}
+                      onClick={() => {
+                        onTeleportToNode(n);
+                        setShowQuickJump(false);
+                      }}
+                      className="w-full text-left px-2 py-1 text-[11px] text-[#878F99] hover:text-[#E6E8EB] hover:bg-[#1E232C] rounded-[2px] flex justify-between items-center"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span
+                          className="w-1.5 h-1.5 rounded-[1px]"
+                          style={{
+                            backgroundColor:
+                              n.status === "ACTIVE"
+                                ? "#2FA866"
+                                : n.status === "PENDING_AUDIT"
+                                ? "#C88D32"
+                                : "#C86D32",
+                          }}
+                        />
+                        <span className={isVisited ? "text-[#E6E8EB]" : ""}>{n.label}</span>
+                      </span>
+                      <span className="text-[9px] text-[#5A626E]">{n.port}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -148,9 +170,28 @@ export default function UplinkHUD({
         </div>
       </header>
 
-      {/* CENTER HUD: DOCKED STATUS BANNER OR CONTROLS HINT */}
+      {/* CENTER HUD: TCP HANDSHAKE ANIMATION OR CONTROLS HINT */}
       <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
-        {isDocked ? (
+        {/* TCP HANDSHAKE DOCKING SEQUENCE (SYN -> SYN-ACK -> ACK) */}
+        {handshakeState ? (
+          <div className="pointer-events-auto bg-[#111317]/95 border border-[#C86D32] px-5 py-3 rounded-[2px] text-xs max-w-md w-full shadow-none space-y-2">
+            <div className="flex justify-between items-center border-b border-[#1F242C] pb-1 text-[10px] text-[#C86D32] font-bold">
+              <span>TCP TRANSPORT HANDSHAKE</span>
+              <span>{handshakeState.node.port}</span>
+            </div>
+            <div className="space-y-1 font-mono text-[11px]">
+              <div className={handshakeState.step >= 1 ? "text-[#E6E8EB]" : "text-[#5A626E]"}>
+                <span className="text-[#C86D32]">[SYN]</span> Probing {handshakeState.node.label}...
+              </div>
+              <div className={handshakeState.step >= 2 ? "text-[#E6E8EB]" : "text-[#5A626E]"}>
+                <span className="text-[#C88D32]">[SYN-ACK]</span> {handshakeState.node.name} acknowledged (RTT: 0.8ms)
+              </div>
+              <div className={handshakeState.step >= 3 ? "text-[#2FA866] font-bold" : "text-[#5A626E]"}>
+                <span className="text-[#2FA866]">[ACK]</span> Connection established. Mounting service overlay...
+              </div>
+            </div>
+          </div>
+        ) : isDocked ? (
           <div className="pointer-events-auto bg-[#111317]/95 border border-[#C86D32] px-4 py-2 rounded-[2px] text-center max-w-sm">
             <div className="text-[10px] text-[#C86D32] font-bold tracking-widest uppercase">
               PROBE DOCKED AT NODE
@@ -167,13 +208,13 @@ export default function UplinkHUD({
           </div>
         ) : (
           !hasUserPiloted && (
-            <div className="bg-[#111317]/90 border border-[#1F242C] px-4 py-2.5 rounded-[2px] text-center max-w-md animate-fade-in">
+            <div className="bg-[#111317]/90 border border-[#1F242C] px-4 py-2.5 rounded-[2px] text-center max-w-md">
               <div className="text-xs text-[#E6E8EB] font-bold tracking-wide mb-1">
                 PILOT THE DATA-PACKET PROBE
               </div>
               <div className="text-[11px] text-[#878F99] space-y-0.5">
                 <div>WASD or Arrow Keys for thrust & banking steer</div>
-                <div>Approach any node to auto-dock and reveal content</div>
+                <div>Approach any node to auto-dock via TCP handshake</div>
                 <div>Press [ ` ] (backtick) anytime for dev console fast-travel</div>
               </div>
             </div>
@@ -228,59 +269,100 @@ export default function UplinkHUD({
           </div>
         )}
 
-        {/* Network Topology Vector Radar Minimap */}
-        <div className="pointer-events-auto bg-[#111317]/90 border border-[#1F242C] p-2 rounded-[2px] flex flex-col items-center">
-          <div className="text-[9px] text-[#5A626E] uppercase mb-1 tracking-wider">
-            RADAR // TOPOLOGY
+        {/* HIGH-PRECISION NETWORK TOPOLOGY RADAR MINIMAP */}
+        <div className="pointer-events-auto bg-[#111317]/95 border border-[#1F242C] p-2.5 rounded-[2px] flex flex-col items-center">
+          <div className="flex justify-between items-center w-full text-[9px] text-[#5A626E] uppercase mb-1 tracking-wider">
+            <span>TOPOLOGY RADAR</span>
+            <span>100M RANGE</span>
           </div>
-          <svg width="110" height="110" viewBox="0 0 110 110" className="bg-[#0A0B0D] border border-[#1F242C] rounded-[2px]">
-            {/* Range Rings */}
-            <circle cx="55" cy="55" r="50" fill="none" stroke="#1F242C" strokeWidth="1" />
-            <circle cx="55" cy="55" r="28" fill="none" stroke="#1F242C" strokeWidth="0.8" strokeDasharray="2 2" />
-            <line x1="55" y1="5" x2="55" y2="105" stroke="#1F242C" strokeWidth="0.6" />
-            <line x1="5" y1="55" x2="105" y2="55" stroke="#1F242C" strokeWidth="0.6" />
 
-            {/* Radar Nodes Blips */}
-            {NETWORK_NODES.map((node) => {
-              // Map world coordinates [-100, 100] to [10, 100]
-              const scale = 50 / WORLD_BOUNDS.maxRadius;
-              const bx = 55 + node.position[0] * scale;
-              const by = 55 + node.position[2] * scale;
-              const isNearest = telemetry.nearestNode?.id === node.id;
+          <div className="relative">
+            <svg width="128" height="128" viewBox="0 0 128 128" className="bg-[#0A0B0D] border border-[#1F242C] rounded-[2px]">
+              {/* Range Rings with Distance Markers */}
+              <circle cx="64" cy="64" r="58" fill="none" stroke="#1F242C" strokeWidth="1" />
+              <circle cx="64" cy="64" r="38" fill="none" stroke="#1F242C" strokeWidth="0.8" strokeDasharray="3 3" />
+              <circle cx="64" cy="64" r="18" fill="none" stroke="#1F242C" strokeWidth="0.6" strokeDasharray="2 2" />
+              <line x1="64" y1="4" x2="64" y2="124" stroke="#1F242C" strokeWidth="0.6" />
+              <line x1="4" y1="64" x2="124" y2="64" stroke="#1F242C" strokeWidth="0.6" />
 
-              return (
-                <g
-                  key={node.id}
-                  onClick={() => onTeleportToNode(node)}
-                  className="cursor-pointer"
-                >
-                  <circle
-                    cx={bx}
-                    cy={by}
-                    r={isNearest ? "3" : "2"}
-                    fill={isNearest ? "#C86D32" : "#878F99"}
-                  />
-                </g>
-              );
-            })}
+              {/* Range labels */}
+              <text x="66" y="24" fill="#3A4556" fontSize="7" fontFamily="monospace">60m</text>
+              <text x="66" y="44" fill="#3A4556" fontSize="7" fontFamily="monospace">30m</text>
 
-            {/* Probe Blip + Heading Indicator */}
-            {(() => {
-              const scale = 50 / WORLD_BOUNDS.maxRadius;
-              const px = 55 + telemetry.position[0] * scale;
-              const py = 55 + telemetry.position[2] * scale;
-              const rad = (telemetry.headingDeg * Math.PI) / 180;
-              const hx = px - Math.sin(rad) * 6;
-              const hy = py - Math.cos(rad) * 6;
+              {/* Radar Nodes Blips color-coded by status token */}
+              {NETWORK_NODES.map((node) => {
+                const scale = 58 / WORLD_BOUNDS.maxRadius;
+                const bx = 64 + node.position[0] * scale;
+                const by = 64 + node.position[2] * scale;
+                const isNearest = telemetry.nearestNode?.id === node.id;
+                const isVisited = visitedNodeIds.includes(node.id);
 
-              return (
-                <g>
-                  <circle cx={px} cy={py} r="2.5" fill="#E6E8EB" />
-                  <line x1={px} y1={py} x2={hx} y2={hy} stroke="#C86D32" strokeWidth="1.5" />
-                </g>
-              );
-            })()}
-          </svg>
+                const statusColor =
+                  node.id === "ingress" || node.id === "contact"
+                    ? "#C86D32"
+                    : node.status === "ACTIVE"
+                    ? "#2FA866"
+                    : node.status === "PENDING_AUDIT"
+                    ? "#C88D32"
+                    : "#C86D32";
+
+                return (
+                  <g
+                    key={node.id}
+                    onClick={() => onTeleportToNode(node)}
+                    onMouseEnter={() => setHoveredNode(node)}
+                    onMouseLeave={() => setHoveredNode(null)}
+                    className="cursor-pointer"
+                  >
+                    {/* Persistent Visited Ring */}
+                    {isVisited && (
+                      <circle
+                        cx={bx}
+                        cy={by}
+                        r="4.5"
+                        fill="none"
+                        stroke="#C86D32"
+                        strokeWidth="0.8"
+                        opacity="0.8"
+                      />
+                    )}
+                    <circle
+                      cx={bx}
+                      cy={by}
+                      r={isNearest ? "3.2" : "2.2"}
+                      fill={isNearest ? "#C86D32" : statusColor}
+                    />
+                  </g>
+                );
+              })}
+
+              {/* Probe Blip + Heading Cone + Velocity Vector */}
+              {(() => {
+                const scale = 58 / WORLD_BOUNDS.maxRadius;
+                const px = 64 + telemetry.position[0] * scale;
+                const py = 64 + telemetry.position[2] * scale;
+                const rad = (telemetry.headingDeg * Math.PI) / 180;
+                const hx = px - Math.sin(rad) * 7;
+                const hy = py - Math.cos(rad) * 7;
+
+                return (
+                  <g>
+                    {/* Probe position blip */}
+                    <circle cx={px} cy={py} r="2.8" fill="#E6E8EB" />
+                    {/* Heading indicator vector */}
+                    <line x1={px} y1={py} x2={hx} y2={hy} stroke="#C86D32" strokeWidth="1.5" />
+                  </g>
+                );
+              })()}
+            </svg>
+
+            {/* Hover tooltip over radar blip */}
+            {hoveredNode && (
+              <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 bg-[#171B22] border border-[#2D3440] px-2 py-0.5 rounded-[2px] text-[9px] text-[#E6E8EB] whitespace-nowrap z-50">
+                {hoveredNode.label} ({hoveredNode.port})
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

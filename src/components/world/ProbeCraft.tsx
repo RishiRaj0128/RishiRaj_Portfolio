@@ -311,7 +311,6 @@ export default function ProbeCraft({
         if (!s.dockDebounce && s.lastNearestNodeId !== node.id) {
           s.dockDebounce = true;
           s.lastNearestNodeId = node.id;
-          soundFx.playDockChime();
           onDockTrigger(node);
           setTimeout(() => {
             s.dockDebounce = false;
@@ -319,6 +318,9 @@ export default function ProbeCraft({
         }
       }
     }
+
+    // Proximity ambient audio layering (ambient tone fades in within 35m)
+    soundFx.updateNodeProximity(nearestNode ? nearestNode.id : null, minDistance);
 
     // Heading in degrees (0 - 360)
     const headingDeg = Math.round(((s.yaw * 180) / Math.PI + 360) % 360);

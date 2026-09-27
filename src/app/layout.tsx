@@ -42,10 +42,16 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "Rishi Raj | RUNTIME — Interactive Systems Portfolio",
-    description: "Don't read about systems. Run them. Interactive distributed systems lab and engineering telemetry.",
+    title: "UPLINK // Rishi Raj — Backend Distributed Systems & DevOps",
+    description: "Navigable 3D network topology portfolio. Pilot a data-packet probe through distributed systems nodes with live leader election, Saga payment FSM, and Base62 URL shortener simulations.",
     type: "website",
     locale: "en_US",
+    siteName: "UPLINK // Rishi Raj",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UPLINK // Rishi Raj — Backend Distributed Systems & DevOps",
+    description: "Navigable 3D network topology portfolio. Pilot a data-packet probe through distributed systems nodes with live leader election, Saga payment FSM, and Base62 URL shortener simulations.",
   },
 };
 

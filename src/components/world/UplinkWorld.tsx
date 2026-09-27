@@ -27,8 +27,15 @@ export default function UplinkWorld() {
     nearestDistance: 0,
   });
 
-  // Docking State
+  // Docking & Handshake State
   const [dockedNode, setDockedNode] = useState<NetworkNodeDef | null>(null);
+  const [handshakeState, setHandshakeState] = useState<{ node: NetworkNodeDef; step: 1 | 2 | 3 } | null>(null);
+
+  // Visited Nodes Set (Persistent illumination across session)
+  const [visitedNodeIds, setVisitedNodeIds] = useState<string[]>(["ingress"]);
+
+  // Security severity state (derived from audit status)
+  const [securitySeverity, setSecuritySeverity] = useState<"ok" | "warn" | "err">("warn");
 
   // Fast Travel / Teleport Target
   const [teleportTarget, setTeleportTarget] = useState<[number, number, number] | null>(null);
@@ -66,22 +73,50 @@ export default function UplinkWorld() {
     return () => clearInterval(interval);
   }, []);
 
-  // Teleport handler
+  // Teleport handler (Fast-travel via Dev Console or Radar click)
   const handleTeleportToNode = useCallback((node: NetworkNodeDef) => {
     setTeleportTarget(node.position);
     setDockedNode(node);
+    setVisitedNodeIds((prev) => (prev.includes(node.id) ? prev : [...prev, node.id]));
   }, []);
 
   // Undock handler
   const handleUndock = useCallback(() => {
     soundFx.playUndockSound();
     setDockedNode(null);
+    setHandshakeState(null);
   }, []);
 
-  // Handle docking trigger from probe proximity
-  const handleDockTrigger = useCallback((node: NetworkNodeDef) => {
-    setDockedNode(node);
-  }, []);
+  // Proximity trigger: executes 3-step TCP Handshake (SYN -> SYN-ACK -> ACK) before mounting overlay
+  const handleDockTrigger = useCallback(
+    (node: NetworkNodeDef) => {
+      if (dockedNode?.id === node.id || handshakeState) return;
+
+      // Step 1: SYN
+      setHandshakeState({ node, step: 1 });
+      soundFx.playTcpHandshakeStep(1);
+
+      // Step 2: SYN-ACK (+140ms)
+      setTimeout(() => {
+        setHandshakeState({ node, step: 2 });
+        soundFx.playTcpHandshakeStep(2);
+      }, 140);
+
+      // Step 3: ACK (+280ms)
+      setTimeout(() => {
+        setHandshakeState({ node, step: 3 });
+        soundFx.playTcpHandshakeStep(3);
+      }, 280);
+
+      // Final: Mount overlay panel & mark visited (+420ms)
+      setTimeout(() => {
+        setHandshakeState(null);
+        setDockedNode(node);
+        setVisitedNodeIds((prev) => (prev.includes(node.id) ? prev : [...prev, node.id]));
+      }, 420);
+    },
+    [dockedNode, handshakeState]
+  );
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#0A0B0D] select-none">
@@ -123,8 +158,8 @@ export default function UplinkWorld() {
           <ProbeCraft
             onTelemetryUpdate={setTelemetry}
             onDockTrigger={handleDockTrigger}
-            isDocked={!!dockedNode}
-            dockedNodeId={dockedNode ? dockedNode.id : null}
+            isDocked={!!dockedNode || !!handshakeState}
+            dockedNodeId={dockedNode ? dockedNode.id : handshakeState ? handshakeState.node.id : null}
             teleportTarget={teleportTarget}
             onTeleportComplete={() => setTeleportTarget(null)}
             touchControls={touchControls}
@@ -134,11 +169,13 @@ export default function UplinkWorld() {
           <NodeStructures3D
             onNodeClick={handleTeleportToNode}
             activeNodeId={dockedNode ? dockedNode.id : null}
+            visitedNodeIds={visitedNodeIds}
+            securitySeverity={securitySeverity}
           />
         </Suspense>
       </Canvas>
 
-      {/* 2D HUD OVERLAY (Telemetry, Minimap Radar, Controls) */}
+      {/* 2D HUD OVERLAY (Telemetry, Minimap Radar, Controls, TCP Handshake) */}
       <UplinkHUD
         telemetry={telemetry}
         onOpenConsole={() => setIsConsoleOpen(true)}
@@ -146,6 +183,8 @@ export default function UplinkWorld() {
         isDocked={!!dockedNode}
         onUndock={handleUndock}
         onTouchInput={setTouchControls}
+        visitedNodeIds={visitedNodeIds}
+        handshakeState={handshakeState}
       />
 
       {/* IN-FICTION DEVELOPER CONSOLE (Section 7: Accessibility & Fast Travel) */}
