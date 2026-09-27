@@ -99,9 +99,36 @@ export async function POST(req: NextRequest) {
     const txId = `tx_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
     const receivedAt = new Date().toISOString();
 
-    // In a production setup with credentials:
-    // If RESEND_API_KEY is present, dispatch to Resend email
-    // Otherwise log structured operational payload to console
+    let emailDispatched = false;
+    let emailId: string | undefined;
+
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const recipientEmail = process.env.CONTACT_RECIPIENT_EMAIL || "rishiraj02989@gmail.com";
+
+    if (resendApiKey) {
+      try {
+        const { Resend } = await import("resend");
+        const resend = new Resend(resendApiKey);
+
+        const { data, error } = await resend.emails.send({
+          from: "UPLINK Ingress <onboarding@resend.dev>",
+          to: [recipientEmail],
+          replyTo: email.trim(),
+          subject: `[UPLINK INGRESS] ${subject?.trim() || "Contact Message"} from ${name.trim()}`,
+          text: `OPERATOR PACKET RECEIVED\n\nFrom: ${name.trim()} <${email.trim()}>\nSubject: ${subject?.trim() || "N/A"}\nTrace ID: ${txId}\nTimestamp: ${receivedAt}\n\nPayload:\n${message.trim()}`,
+        });
+
+        if (error) {
+          console.error("RESEND_DISPATCH_ERROR:", error);
+        } else if (data) {
+          emailDispatched = true;
+          emailId = data.id;
+        }
+      } catch (sendErr) {
+        console.error("RESEND_EXCEPTION:", sendErr);
+      }
+    }
+
     console.log(
       JSON.stringify({
         event: "INGRESS_MESSAGE_RECEIVED",
@@ -111,6 +138,8 @@ export async function POST(req: NextRequest) {
         subject: subject?.trim() || "GENERAL_INGRESS",
         messageLength: message.length,
         clientIpMasked: clientIp.replace(/\.\d+$/, ".xxx"),
+        emailDispatched,
+        emailId,
       })
     );
 
@@ -119,9 +148,13 @@ export async function POST(req: NextRequest) {
         success: true,
         status: 200,
         txId,
+        dispatchId: emailId ?? txId,
         receivedAt,
-        routing: "DISPATCHED_TO_OPERATOR_QUEUE",
-        message: "Payload successfully validated and queued for Rishi Raj.",
+        emailDispatched,
+        routing: emailDispatched ? "TRANSMITTED_TO_INBOX" : "DISPATCHED_TO_OPERATOR_QUEUE",
+        message: emailDispatched
+          ? "Packet successfully transmitted directly to Rishi Raj's inbox."
+          : "Payload successfully validated and queued for Rishi Raj.",
       },
       { status: 200 }
     );
