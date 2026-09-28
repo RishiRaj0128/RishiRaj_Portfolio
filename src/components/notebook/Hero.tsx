@@ -61,34 +61,37 @@ export function Hero() {
               </p>
             </div>
 
-            {/* Name with Hand-drawn Underline */}
-            <div>
-              <div className="inline-block relative">
-                <h1 className="font-serif text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] tracking-tight">
-                  {PORTFOLIO_CONTENT.personal.name}
-                </h1>
-                <div className="mt-1">
-                  <AmberUnderline className="w-40 sm:w-48 h-2 text-[var(--color-accent)]" />
+            {/* Name, Title, and Photo Dossier */}
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <div className="inline-block relative">
+                  <h1 className="font-serif text-4xl sm:text-5xl font-bold text-[var(--color-text-primary)] tracking-tight">
+                    {PORTFOLIO_CONTENT.personal.name}
+                  </h1>
+                  <div className="mt-1">
+                    <AmberUnderline className="w-40 sm:w-48 h-2 text-[var(--color-accent)]" />
+                  </div>
                 </div>
+                <p className="font-mono text-xs sm:text-sm text-[var(--color-text-secondary)] mt-2">
+                  {PORTFOLIO_CONTENT.personal.education}
+                </p>
               </div>
-              <p className="font-mono text-xs sm:text-sm text-[var(--color-text-secondary)] mt-2">
-                {PORTFOLIO_CONTENT.personal.education}
-              </p>
-            </div>
 
-            {/* Photo slot (if /rishi.jpg exists, cropped plain rectangle, 2 to 4px radius, 1px border; graceful fallback if absent) */}
-            {photoExists && (
-              <div className="relative w-36 h-44 sm:w-40 sm:h-48 rounded-[3px] border border-[var(--color-border-default)] overflow-hidden bg-[var(--color-surface)]">
-                <Image
-                  src="/rishi.jpg"
-                  alt="Rishi Raj - Backend & Distributed Systems Engineer"
-                  fill
-                  sizes="(max-width: 640px) 144px, 160px"
-                  className="object-cover"
-                  onError={() => setPhotoExists(false)}
-                />
-              </div>
-            )}
+              {/* Photo slot (cropped plain rectangle, 3px radius, 1px border; graceful fallback if absent) */}
+              {photoExists && (
+                <div className="relative w-28 h-36 sm:w-32 sm:h-40 shrink-0 rounded-[3px] border border-[var(--color-border-default)] overflow-hidden bg-[var(--color-surface)] shadow-sm">
+                  <Image
+                    src="/rishi.jpg"
+                    alt="Rishi Raj - Backend & Distributed Systems Engineer"
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 112px, 128px"
+                    className="object-cover"
+                    onError={() => setPhotoExists(false)}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Audience-Specific Headline and Subhead */}
             <div className="space-y-3 min-h-[140px] transition-opacity duration-200">

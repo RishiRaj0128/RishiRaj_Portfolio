@@ -137,7 +137,7 @@ Screenshots are saved directly to `/public/projects/`.
 
 The following items are designated placeholders for the owner to drop in:
 
-- [ ] **Owner's Headshot Photo**: Drop `rishi.jpg` into `/public/rishi.jpg`. The site automatically detects it and crops it to a plain rectangle with a 1px border.
+- [x] **Owner's Headshot Photo**: Configured in `/public/rishi.jpg`. The site automatically detects it and crops it to a plain rectangle with a 1px border.
 - [ ] **About Paragraph**: Personalize `PORTFOLIO_CONTENT.about.paragraph` in `src/lib/content/portfolioContent.ts` with Rishi's exact words.
 - [ ] **Target Roles**: Adjust `PORTFOLIO_CONTENT.personal.openToRoles` if new roles or target locations are desired.
 - [ ] **Message Broker Repository**: Replace the private repository note with the public URL when open-sourced.
