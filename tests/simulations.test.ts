@@ -166,3 +166,20 @@ test("World Topology: Node Coordinate Mapping & Conduit Connectivity", async () 
   });
 });
 
+test("Engine 5: Break-It Demo - Computed Metrics & Zero Acknowledged Loss", async () => {
+  const { runBreakItSimulation } = await import("../src/lib/simulations/breakItSimulation");
+  
+  const result = await runBreakItSimulation(740);
+
+  // Reliable system assertions
+  assert.equal(result.reliable.ordersLost, 0, "Reliable system must compute 0 orders lost");
+  assert.equal(result.reliable.duplicateCharges, 0, "Reliable system must compute 0 duplicate charges");
+  assert.ok(result.reliable.recoveryTimeMs >= 500 && result.reliable.recoveryTimeMs <= 1000, "Recovery time should be within 500-1000ms window");
+  assert.equal(result.reliable.survivingOrders, 3, "All 3 committed orders must survive in cluster log");
+  assert.equal(result.reliable.compensationCompleted, true, "Timed-out order must be compensated");
+
+  // Fragile system comparison
+  assert.ok(result.fragile.ordersLost > 0, "Fragile system must show positive orders lost");
+  assert.ok(result.fragile.duplicateCharges > 0, "Fragile system must show duplicate charges");
+});
+

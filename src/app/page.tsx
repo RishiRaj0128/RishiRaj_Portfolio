@@ -1,32 +1,42 @@
-"use client";
-
 import React from "react";
-import dynamic from "next/dynamic";
+import { AudienceProvider } from "@/components/notebook/AudienceContext";
+import { Header } from "@/components/notebook/Header";
+import { Hero } from "@/components/notebook/Hero";
+import { ScrollStory } from "@/components/notebook/ScrollStory";
+import { ProjectsSection } from "@/components/notebook/ProjectsSection";
+import { SkillsSection } from "@/components/notebook/SkillsSection";
+import { AboutPrinciples } from "@/components/notebook/AboutPrinciples";
+import { TimelineSecurity } from "@/components/notebook/TimelineSecurity";
+import { ContactSection } from "@/components/notebook/ContactSection";
+import { Footer } from "@/components/notebook/Footer";
 
-// Dynamically load the 3D Uplink World with ssr: false for client-side WebGL rendering
-const UplinkWorld = dynamic(() => import("@/components/world/UplinkWorld"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-screen h-screen bg-[#0A0B0D] text-[#E6E8EB] flex flex-col justify-between p-6 sm:p-12 font-mono">
-      <div className="flex justify-between items-center text-xs text-[#878F99] border-b border-[#1F242C] pb-4">
-        <span className="font-bold text-[#E6E8EB]">UPLINK // TOPOLOGY BOOT SEQUENCE</span>
-        <span className="text-[#C86D32]">INITIALIZING WEBGL CANVAS...</span>
-      </div>
-      <div className="text-xs text-[#878F99] space-y-2 max-w-md">
-        <div>STREAMING DISTRIBUTED NETWORK ENVIRONMENT...</div>
-        <div>PREPARING DATA-PACKET PROBE CRAFT...</div>
-      </div>
-      <div className="text-[11px] text-[#5A626E] border-t border-[#1F242C] pt-3">
-        HOST: RISHI RAJ • BACKEND DISTRIBUTED SYSTEMS
-      </div>
-    </div>
-  ),
-});
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="w-screen h-screen overflow-hidden bg-[#0A0B0D] selection:bg-[#C86D32] selection:text-[#0A0B0D]">
-      <UplinkWorld />
-    </main>
+    <AudienceProvider>
+      {/* Accessible skip link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 px-4 py-2 bg-[var(--color-accent)] text-white rounded-[2px] font-mono text-xs"
+      >
+        Skip to main content
+      </a>
+
+      {/* Main Notebook Header with Audience Switch & Theme Toggle */}
+      <Header />
+
+      {/* Main Content Sections */}
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+        <Hero />
+        <ScrollStory />
+        <ProjectsSection />
+        <SkillsSection />
+        <AboutPrinciples />
+        <TimelineSecurity />
+        <ContactSection />
+      </main>
+
+      {/* Site Footer */}
+      <Footer />
+    </AudienceProvider>
   );
 }

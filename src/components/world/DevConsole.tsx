@@ -147,14 +147,18 @@ export default function DevConsole({
         newHistory.push({
           type: "output",
           text: `SUPPORTED COMMANDS:
-  goto <node>     Teleport probe to node and open section overlay
-  list            List all navigable nodes and coordinates
-  contact         Open direct contact transmission portal
-  resume          Download Rishi Raj engineering resume
-  terms           View Terms of Service legal terms
-  privacy         View Privacy Policy terms
-  clear           Clear terminal output buffer
-  help            Show this command manual`,
+  goto <node>       Teleport probe to node and open section overlay
+  list              List all navigable nodes and coordinates
+  contact           Open direct contact transmission portal
+  resume            Download Rishi Raj engineering resume
+  terms             View Terms of Service legal terms
+  privacy           View Privacy Policy terms
+  whoami            Print operator identity & credentials
+  uptime            Display cluster uptime & verified reliability stats
+  sudo hire rishi   Request contract authorization & contact portal
+  build             Secret node: inspect site architecture & stack
+  clear             Clear terminal output buffer
+  help              Show this command manual`,
         });
         break;
 
@@ -227,6 +231,60 @@ export default function DevConsole({
         newHistory.push({ type: "info", text: "DISPLAYING PRIVACY POLICY..." });
         onOpenLegal("privacy");
         onClose();
+        break;
+
+      case "whoami":
+        newHistory.push({
+          type: "output",
+          text: `USER: Rishi Raj
+IDENTITY: Backend Distributed Systems & DevOps Engineer
+INSTITUTION: B.Tech CSE, Lovely Professional University (CGPA 7.98)
+CORE PROMISE: Building fault-tolerant backends that never lose data or double-charge.`,
+        });
+        break;
+
+      case "uptime":
+        newHistory.push({
+          type: "output",
+          text: `SYSTEM UPTIME:
+  Availability: 99.98% across 50+ simulated failure cycles
+  Quorum Recovery: ~750ms leader failover
+  Net Balance Drift: $0.00 across 5,000+ ledger entries
+  Duplicate Charges: 0 (100% blocked via atomic idempotency)`,
+        });
+        break;
+
+      case "sudo":
+        if (raw.toLowerCase() === "sudo hire rishi") {
+          newHistory.push({
+            type: "info",
+            text: `[ROOT ACCESS GRANTED]: Elevating privileges for operator...
+Dispatching contract authorization conduit. Opening contact ingress...`,
+          });
+          setTimeout(() => {
+            onOpenContact();
+            onClose();
+          }, 400);
+        } else {
+          newHistory.push({
+            type: "output",
+            text: `sudo: try 'sudo hire rishi'`,
+          });
+        }
+        break;
+
+      case "build":
+      case "site":
+      case "architecture":
+        newHistory.push({
+          type: "output",
+          text: `HOW THIS SITE WAS BUILT (SECRET ARCHITECTURE NODE):
+- Core: Next.js 16 App Router, TypeScript, React 19, Tailwind CSS v4
+- Dual UI Paradigm: Accessible server-rendered Engineer's Notebook (SSR) + 3D WebGL UPLINK World
+- 3D Engine: React Three Fiber, Three.js, Rapier 3D physics engine, procedural audio synthesizers
+- Simulations: In-memory Raft Quorum leader election, 8-predicate Saga transaction FSM, 64-bit Snowflake Base62 encoder
+- Privacy & Tracking: ZERO third-party marketing trackers, zero tracking pixels, zero cookies.`,
+        });
         break;
 
       case "clear":

@@ -11,6 +11,7 @@ export interface NetworkNodeDef {
   dockingRadius: number;
   label: string;
   sublabel: string;
+  plainSubtitle?: string;
   port?: string;
   status: "ACTIVE" | "PENDING_AUDIT" | "STANDBY" | "TRANSMITTING";
   description: string;
@@ -35,6 +36,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 7.5,
     label: "INGRESS // ABOUT",
     sublabel: "HOST: RISHI RAJ • BOOT SEQUENCE",
+    plainSubtitle: "About Me & Introduction",
     port: "PORT 80/443",
     status: "ACTIVE",
     description: "Primary system ingress. Visitor probe spawn coordinates. Backend distributed systems & DevOps portfolio.",
@@ -47,6 +49,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.5,
     label: "STATUS // SERVICES",
     sublabel: "CORE SKILLS & TECH REGISTRY",
+    plainSubtitle: "Skills & Tech Stack",
     port: "PORT 8500",
     status: "ACTIVE",
     description: "Operational skills matrix styled as live service health monitors across Languages, Cloud, Backend, and Data.",
@@ -59,6 +62,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.5,
     label: "FLAGSHIP // BROKER",
     sublabel: "RAFT QUORUM & ISR REPLICATION",
+    plainSubtitle: "Message Broker Project",
     port: "PORT 9092",
     status: "ACTIVE",
     description: "5-node Raft consensus cluster with client-side leader election state machine and zero loss verification.",
@@ -71,6 +75,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.5,
     label: "FLAGSHIP // PAYMENT",
     sublabel: "SAGA FSM & ZERO-DRIFT LEDGER",
+    plainSubtitle: "Payment Engine Project",
     port: "PORT 8443",
     status: "ACTIVE",
     description: "Distributed transaction coordinator with composed predicates, downstream failure rollback, and double-entry ledger.",
@@ -83,6 +88,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.5,
     label: "FLAGSHIP // SHORTENER",
     sublabel: "BASE62 SNOWFLAKE & CACHE-ASIDE",
+    plainSubtitle: "URL Shortener Project",
     port: "PORT 8080",
     status: "ACTIVE",
     description: "Real working Base62 short-code generator, click analytics telemetry, and collision-resistance proof.",
@@ -95,6 +101,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.0,
     label: "WAYPOINT // CREDENTIALS",
     sublabel: "LEETCODE • COGNITIA • DBMS",
+    plainSubtitle: "Verified Credentials",
     port: "PORT 2026",
     status: "ACTIVE",
     description: "Academic credentials, 100+ LeetCode DSA milestones, Cognitia finalist standing, and Infosys DBMS certification.",
@@ -107,6 +114,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.0,
     label: "SECURITY // POSTMORTEM",
     sublabel: "STRIX AUDIT [PRE-LAUNCH PENDING]",
+    plainSubtitle: "Security Audit Status",
     port: "PORT 9443",
     status: "PENDING_AUDIT",
     description: "Defensive architecture postmortem layout. Flagged pending real Strix penetration scan per launch guardrail.",
@@ -119,6 +127,7 @@ export const NETWORK_NODES: NetworkNodeDef[] = [
     dockingRadius: 8.5,
     label: "EGRESS // TRANSMIT",
     sublabel: "DISPATCH PACKET • CONTACT FORM",
+    plainSubtitle: "Contact Me",
     port: "PORT 587",
     status: "TRANSMITTING",
     description: "Outbound packet transmission node. Secure contact form with honeypot spam protection, direct email, and socials.",

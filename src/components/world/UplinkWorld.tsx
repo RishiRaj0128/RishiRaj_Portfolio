@@ -35,7 +35,7 @@ export default function UplinkWorld() {
   const [visitedNodeIds, setVisitedNodeIds] = useState<string[]>(["ingress"]);
 
   // Security severity state (derived from audit status)
-  const [securitySeverity, setSecuritySeverity] = useState<"ok" | "warn" | "err">("warn");
+  const securitySeverity: "ok" | "warn" | "err" = "warn";
 
   // Fast Travel / Teleport Target
   const [teleportTarget, setTeleportTarget] = useState<[number, number, number] | null>(null);

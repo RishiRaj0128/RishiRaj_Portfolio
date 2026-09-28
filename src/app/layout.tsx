@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Public_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Newsreader, Public_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-// Public Sans for crisp technical headings & body
+// Newsreader editorial serif for headlines, margin notes, and editorial emphasis
+const newsreader = Newsreader({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  display: "swap",
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
+});
+
+// Public Sans for clean technical body
 const publicSans = Public_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -10,7 +19,7 @@ const publicSans = Public_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
-// IBM Plex Mono for all telemetry, logs, metrics, code, and status readouts
+// IBM Plex Mono for telemetry, metrics, code, and status labels
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
@@ -19,44 +28,48 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UPLINK // Rishi Raj — Backend Distributed Systems & DevOps",
+  title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
   description:
-    "Navigable 3D network topology portfolio of Rishi Raj. Pilot a data-packet probe through distributed systems nodes with live leader election, Saga payment FSM, and Base62 URL shortener simulations.",
+    "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
   keywords: [
     "Distributed Systems",
-    "DevOps",
-    "Cloud Architecture",
+    "Fault Tolerance",
+    "Idempotency",
+    "Saga Pattern",
+    "Raft Quorum",
+    "Leader Election",
     "Java",
     "Spring Boot",
     "Kubernetes",
     "Docker",
-    "Terraform",
-    "Prometheus",
-    "Grafana",
-    "MySQL",
     "Redis",
+    "MySQL",
+    "DevOps",
   ],
   authors: [{ name: "Rishi Raj" }],
+  creator: "Rishi Raj",
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: "UPLINK // Rishi Raj — Backend Distributed Systems & DevOps",
-    description: "Navigable 3D network topology portfolio. Pilot a data-packet probe through distributed systems nodes with live leader election, Saga payment FSM, and Base62 URL shortener simulations.",
+    title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
+    description:
+      "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
     type: "website",
     locale: "en_US",
-    siteName: "UPLINK // Rishi Raj",
+    siteName: "Rishi Raj Portfolio",
   },
   twitter: {
     card: "summary_large_image",
-    title: "UPLINK // Rishi Raj — Backend Distributed Systems & DevOps",
-    description: "Navigable 3D network topology portfolio. Pilot a data-packet probe through distributed systems nodes with live leader election, Saga payment FSM, and Base62 URL shortener simulations.",
+    title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
+    description:
+      "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0A0B0D",
+  themeColor: "#F4EFE6",
   width: "device-width",
   initialScale: 1,
 };
@@ -69,9 +82,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${publicSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${newsreader.variable} ${publicSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0A0B0D] text-[#E6E8EB] font-sans">
+      <body className="min-h-full flex flex-col font-sans transition-colors duration-200">
         {children}
       </body>
     </html>

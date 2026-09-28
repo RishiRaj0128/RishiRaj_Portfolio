@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CopyIcon, CopiedSuccessIcon, ExternalLinkIcon } from "@/components/ui/icons";
 
 export default function ContactOverlay() {
@@ -11,14 +11,10 @@ export default function ContactOverlay() {
     message: "",
     _honeypot: "",
   });
-  const [renderedAt, setRenderedAt] = useState<number>(0);
+  const [renderedAt] = useState<number>(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [responseLog, setResponseLog] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
-
-  useEffect(() => {
-    setRenderedAt(Date.now());
-  }, []);
 
   const curlSnippet = `curl -X POST "https://controlplane.rishiraj.dev/api/contact" \\
   -H "Content-Type: application/json" \\

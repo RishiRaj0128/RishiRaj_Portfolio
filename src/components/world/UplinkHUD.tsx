@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Link from "next/link";
 import { NETWORK_NODES, NetworkNodeDef, WORLD_BOUNDS } from "@/lib/world/worldTopology";
 import { soundFx } from "@/lib/audio/soundFx";
 
@@ -34,22 +35,14 @@ export default function UplinkHUD({
   const [isAudioMuted, setIsAudioMuted] = useState(true);
   const [showQuickJump, setShowQuickJump] = useState(false);
   const [hasUserPiloted, setHasUserPiloted] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice] = useState(() =>
+    typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+  );
   const [hoveredNode, setHoveredNode] = useState<NetworkNodeDef | null>(null);
 
-  // Detect touch devices
-  useEffect(() => {
-    if (typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0)) {
-      setIsTouchDevice(true);
-    }
-  }, []);
-
-  // Track if user has piloted probe
-  useEffect(() => {
-    if (telemetry.velocity > 0.5) {
-      setHasUserPiloted(true);
-    }
-  }, [telemetry.velocity]);
+  if (!hasUserPiloted && telemetry.velocity > 0.5) {
+    setHasUserPiloted(true);
+  }
 
   const toggleAudio = () => {
     const next = !isAudioMuted;
@@ -66,7 +59,7 @@ export default function UplinkHUD({
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-[1px] bg-[#C86D32] animate-pulse" />
             <span className="font-bold text-[#E6E8EB] tracking-wider">UPLINK</span>
-            <span className="text-[#5A626E] hidden sm:inline">// NETWORK TOPOLOGY</span>
+            <span className="text-[#5A626E] hidden sm:inline">{"// NETWORK TOPOLOGY"}</span>
           </div>
 
           <div className="h-3 w-[1px] bg-[#1F242C] hidden sm:block" />
@@ -88,16 +81,32 @@ export default function UplinkHUD({
         {/* Nearest Node Waypoint Tracker */}
         <div className="flex items-center gap-2 text-[11px]">
           {telemetry.nearestNode && (
-            <div className="flex items-center gap-1.5 bg-[#0A0B0D] px-2 py-0.5 border border-[#1F242C] rounded-[2px]">
-              <span className="text-[#5A626E]">TARGET:</span>
-              <span className="text-[#C86D32] font-semibold">{telemetry.nearestNode.label}</span>
-              <span className="text-[#878F99]">({telemetry.nearestDistance}m)</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-1.5 bg-[#0A0B0D] px-2.5 py-1 border border-[#1F242C] rounded-[2px]">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[#5A626E]">TARGET:</span>
+                <span className="text-[#C86D32] font-semibold">{telemetry.nearestNode.label}</span>
+                <span className="text-[#878F99]">({telemetry.nearestDistance}m)</span>
+              </div>
+              {telemetry.nearestNode.plainSubtitle && (
+                <span className="text-[10px] text-[#878F99] font-sans">
+                  [{telemetry.nearestNode.plainSubtitle}]
+                </span>
+              )}
             </div>
           )}
         </div>
 
         {/* Action Controls & Fast-Travel */}
         <div className="flex items-center gap-2 text-xs">
+          {/* Back to Notebook Link */}
+          <Link
+            href="/"
+            className="px-2.5 py-1 bg-[#1A1512] border border-[#C86D32] hover:bg-[#C86D32]/20 text-[#C86D32] rounded-[2px] text-xs font-mono font-bold transition-colors inline-flex items-center gap-1"
+            title="Return to the server-rendered Engineer's Notebook"
+          >
+            <span>← Notebook</span>
+          </Link>
+
           {/* Audio Toggle */}
           <button
             onClick={toggleAudio}
@@ -135,22 +144,29 @@ export default function UplinkHUD({
                         onTeleportToNode(n);
                         setShowQuickJump(false);
                       }}
-                      className="w-full text-left px-2 py-1 text-[11px] text-[#878F99] hover:text-[#E6E8EB] hover:bg-[#1E232C] rounded-[2px] flex justify-between items-center"
+                      className="w-full text-left px-2 py-1.5 text-[11px] text-[#878F99] hover:text-[#E6E8EB] hover:bg-[#1E232C] rounded-[2px] flex justify-between items-center"
                     >
-                      <span className="flex items-center gap-1.5">
-                        <span
-                          className="w-1.5 h-1.5 rounded-[1px]"
-                          style={{
-                            backgroundColor:
-                              n.status === "ACTIVE"
-                                ? "#2FA866"
-                                : n.status === "PENDING_AUDIT"
-                                ? "#C88D32"
-                                : "#C86D32",
-                          }}
-                        />
-                        <span className={isVisited ? "text-[#E6E8EB]" : ""}>{n.label}</span>
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="flex items-center gap-1.5">
+                          <span
+                            className="w-1.5 h-1.5 rounded-[1px]"
+                            style={{
+                              backgroundColor:
+                                n.status === "ACTIVE"
+                                  ? "#2FA866"
+                                  : n.status === "PENDING_AUDIT"
+                                  ? "#C88D32"
+                                  : "#C86D32",
+                            }}
+                          />
+                          <span className={isVisited ? "text-[#E6E8EB] font-bold" : ""}>{n.label}</span>
+                        </span>
+                        {n.plainSubtitle && (
+                          <span className="text-[9px] text-[#878F99] font-sans pl-3">
+                            {n.plainSubtitle}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[9px] text-[#5A626E]">{n.port}</span>
                     </button>
                   );

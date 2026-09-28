@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { NETWORK_NODES, WORLD_BOUNDS, NetworkNodeDef } from "@/lib/world/worldTopology";
@@ -62,9 +62,6 @@ export default function ProbeCraft({
     right: false,
   });
 
-  // Track if user moved
-  const [hasMoved, setHasMoved] = useState(false);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't capture when typing in an input or console
@@ -79,22 +76,18 @@ export default function ProbeCraft({
         case "KeyW":
         case "ArrowUp":
           keys.current.forward = true;
-          setHasMoved(true);
           break;
         case "KeyS":
         case "ArrowDown":
           keys.current.backward = true;
-          setHasMoved(true);
           break;
         case "KeyA":
         case "ArrowLeft":
           keys.current.left = true;
-          setHasMoved(true);
           break;
         case "KeyD":
         case "ArrowRight":
           keys.current.right = true;
-          setHasMoved(true);
           break;
       }
     };
@@ -141,12 +134,12 @@ export default function ProbeCraft({
 
   // Trail particles geometry
   const trailParticleCount = 28;
-  const { trailPositions, trailPoints } = useMemo(() => {
+  const trailPositions = useMemo(() => {
     const positions = new Float32Array(trailParticleCount * 3);
     for (let i = 0; i < trailParticleCount * 3; i++) {
       positions[i] = 0;
     }
-    return { trailPositions: positions, trailPoints: positions };
+    return positions;
   }, []);
 
   const trailIndex = useRef(0);

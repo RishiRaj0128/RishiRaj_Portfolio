@@ -2,20 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import { sharedSagaEngine } from "@/lib/simulations/simulationInstances";
-import { BookingTransaction, LedgerEntry } from "@/lib/simulations/sagaFsm";
+import { BookingTransaction } from "@/lib/simulations/sagaFsm";
 import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export default function PaymentOverlay() {
   const [currentTx, setCurrentTx] = useState<BookingTransaction | null>(null);
   const [sagaFeedback, setSagaFeedback] = useState<string | null>(null);
-  const [ledgerEntries, setLedgerEntries] = useState<LedgerEntry[]>(sharedSagaEngine.getLedger());
   const [ledgerDrift, setLedgerDrift] = useState(sharedSagaEngine.computeLedgerDrift());
   const [stats, setStats] = useState(sharedSagaEngine.getStats());
   const [isExecuting, setIsExecuting] = useState(false);
 
   useEffect(() => {
     const unsub = sharedSagaEngine.subscribe(() => {
-      setLedgerEntries(sharedSagaEngine.getLedger());
       setLedgerDrift(sharedSagaEngine.computeLedgerDrift());
       setStats(sharedSagaEngine.getStats());
     });

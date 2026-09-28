@@ -1,92 +1,104 @@
-# "UPLINK" — Drivable Network Portfolio
-**Operator: Rishi Raj | Backend Distributed Systems / DevOps / Cloud Architecture**
+# Rishi Raj — Portfolio & Systems Engineering Notebook
+**Operator: Rishi Raj | Backend Distributed Systems / Fault Tolerance / DevOps**
 
-UPLINK is a fully navigable 3D portfolio world where the visitor pilots a data-packet probe through an abstract network-topology environment. Approaching a service node docks the probe and reveals that node's verified content, architecture benchmarks, and interactive simulation engines.
+> "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice."
 
----
-
-## Technical Stack & Primitives
-
-- **Framework**: Next.js (App Router) + React 19 + TypeScript
-- **3D Graphics & Physics**: Three.js + `@react-three/fiber` + `@react-three/drei`
-- **Craft Flight Model**: Procedural hovercraft flight physics (momentum, drift, banking roll, thruster glow, soft boundary repulsion)
-- **Overlay Panels**: Framer Motion for smooth 2D surface transitions
-- **Styling**: Tailwind CSS + custom design tokens (`src/styles/tokens.ts`)
-- **Typography**: `IBM Plex Mono` (telemetry, console, benchmarks) + `Public Sans` (headings & structural copy)
-- **Audio**: Web Audio API procedural sound synthesizer (`src/lib/audio/soundFx.ts`) — user toggleable, polite, zero asset dependencies
+A high-performance portfolio engineered with a dual presentation architecture:
+1. **The Engineer's Notebook (Default)**: A server-rendered, indexable, fast, accessible page styled like a well-kept technical notebook (warm cream paper, deep ink typography, blueprint SVG line schematics, margin notes, highlighter accents, and a signature 3-way audience switch).
+2. **UPLINK Explore Mode (`/explore`)**: An interactive 3D WebGL network topology world where visitors pilot a data-packet probe through interconnected cluster nodes.
 
 ---
 
-## World Topology & Nodes
+## 1. Technical Stack & Architecture
 
-The world is an abstract network topology with 8 interconnected nodes:
-
-1. **INGRESS // ABOUT** `[0, 0]` (Port 80/443)  
-   Primary probe spawn point. Rishi Raj engineering profile, core philosophy, and host boot sequence telemetry.
-2. **STATUS // SERVICES** `[-34, -28]` (Port 8500)  
-   Operational skills matrix styled as live service health monitors across Core Languages, CS Fundamentals, Backend, Cloud/DevOps, Data, and ML/EDA.
-3. **FLAGSHIP // MESSAGE BROKER** `[-48, 24]` (Port 9092)  
-   5-node Raft consensus cluster with client-side leader election state machine, heartbeat failure detection, and idempotent producer.  
-   *Verified stats*: Zero acknowledged loss across 50+ failure cycles, ~750ms write-availability restoration, zero duplicates across 10,000 retries, <200ms rebalance downtime.
-4. **FLAGSHIP // PAYMENT ENGINE** `[24, 48]` (Port 8443)  
-   Saga compensation workflow & transaction FSM. Composed 8-point predicate evaluation, downstream failure injection, and double-entry ledger with zero net drift.  
-   *Honest AI scope*: Vector DBs (FAISS, ChromaDB) and LLMs were used strictly for semantic movie query search and routing; core transactions and ledger accounting are 100% deterministic Java/Spring Boot.
-5. **FLAGSHIP // URL SHORTENER** `[48, -24]` (Port 8080)  
-   Real working embedded Base62 short-code generator with 64-bit Snowflake IDs, live click analytics, cache-aside latency tracking, synthetic bot detection, and collision-resistance test.  
-   *Verified past stats*: 1M collision-free codes under stress test, sub-50ms redirects at 5,000 events/sec, 92% synthetic bot detection, ~65% latency reduction via Redis.
-6. **WAYPOINT // ACHIEVEMENTS** `[-16, -52]` (Port 2026)  
-   Factual benchmarks: 100+ LeetCode DSA problems solved, Top 25/200 teams at Cognitia (LPU), Infosys Springboard DBMS certification, and B.Tech CSE at Lovely Professional University (CGPA 7.98).
-7. **SECURITY // POSTMORTEM** `[36, -44]` (Port 9443)  
-   Security architecture postmortem layout. Flagged pending real Strix penetration scan per launch guardrail.
-8. **EGRESS // TRANSMIT** `[0, 64]` (Port 587)  
-   High-gain transmitter dish. Defensive contact form with honeypot spam protection, timing validation, direct email (`rishiraj02989@gmail.com`), GitHub, LinkedIn, and cURL generator.
+- **Framework**: Next.js 16 (App Router, Turbopack) + React 19 + TypeScript
+- **Styling**: Tailwind CSS v4 + custom warm cream notebook and dark mode tokens
+- **Typography**: 
+  - Headlines & Margin Notes: `Newsreader` (editorial serif)
+  - Body Copy: `Public Sans` (18px minimum for readability)
+  - Telemetry & Metrics: `IBM Plex Mono`
+- **Simulations**: Pure TypeScript distributed systems state machines (Raft Quorum Leader Election, Saga FSM with idempotency and compensation rollback, 64-bit Snowflake Base62 URL shortener)
+- **3D World (`/explore`)**: Three.js + React Three Fiber + Drei + Rapier 3D physics (lazy-loaded with `next/dynamic` to ensure 0 WebGL payload on the home page)
+- **Email Ingress**: Next.js Serverless Route (`/api/contact`) protected by honeypot, request velocity checks, in-memory rate limiting, and optional Resend dispatch
+- **Privacy Guarantee**: Zero tracking cookies, zero third-party analytics pixels, zero behavioral scripts
 
 ---
 
-## Navigation & Controls
+## 2. Signature Features
 
-### Flight Controls (Primary Navigation)
-- **[W] / [Arrow Up]**: Forward thrust
-- **[S] / [Arrow Down]**: Reverse / Brake
-- **[A] / [Arrow Left]**: Steer left (gentle banking roll)
-- **[D] / [Arrow Right]**: Steer right (gentle banking roll)
-- **Proximity Docking**: Approach within ~8 meters of any node to auto-dock and open its section overlay.
-- **[ESC]**: Resume flight / undock from current node.
-- **Mobile Touch Controls**: On-screen twin virtual controls (Thrust + Steer) appear on touch/mobile viewports.
+### Three-Way Audience Switch (Simple | Recruiter | Engineer)
+A persistent control in the notebook header that dynamically switches copy across the site:
+- **Simple**: Plain English everyday analogies with zero technical jargon.
+- **Recruiter**: Impact first, verified empirical results, core languages, and tools.
+- **Engineer**: Exact architecture, state machine transitions, algorithms, and numbers.
+- **Shareable & Accessible**: URL reflects mode via `?view=engineer`, persists in `localStorage`, and announces transitions via `aria-live`.
+- **Jargon Tooltips**: In Simple and Recruiter modes, technical terms can be tapped or hovered for instant 1-line plain definitions.
 
-### Developer Console (Accessibility & Fast Travel)
-Press the backtick key (**`**) or click the **CONSOLE** button in the HUD header to open the Quake/Half-Life-style terminal overlay. This is the sanctioned non-flight accessibility route through the site.
+### "Break It" Interactive Server Comparison
+Located in the hero section, this demo runs real simulation code side by side:
+- **Without Reliable Systems**: When the server crashes, in-flight orders vanish and a retrying customer is billed twice.
+- **With Systems Like I Build**: Heartbeat detects the outage, Raft Quorum elects a standby leader in ~750ms, the Saga compensator rolls back uncommitted steps, and orders survive with zero duplicate charges.
+- **Computed Metrics**: Counters (orders lost, duplicates blocked, failover time) are calculated in real time by the underlying simulation engines, not hard-coded constants.
 
-Supported commands:
-```bash
-goto <node-name>   # Teleport probe directly to node and open overlay (e.g. goto broker, goto payment)
-list               # List all 8 network nodes with coordinates and ports
-contact            # Teleport directly to Egress transmission node and open contact form
-resume             # Download / open Rishi Raj engineering resume
-terms              # View Terms of Service
-privacy            # View Privacy Policy
-clear              # Clear terminal output buffer
-help               # List all supported commands
+### "What Happens When You Press Pay" (Scroll Story)
+A chapter-based journey tracking a payment through six critical stages:
+1. **Client Ingress (App)**: Attaching an atomic idempotency key to prevent double clicks.
+2. **Message Broker (Queue)**: Appending to a 5-node cluster with Raft Quorum replication.
+3. **Validation Engine (Check)**: 8 domain predicates evaluated in a single pass.
+4. **Payment Gateway (Bank)**: Saga orchestrator executing compensating actions on timeout.
+5. **Audit Ledger (Ledger)**: Double-entry accounting with $0.00 net balance drift.
+6. **URL Shortener (Receipt)**: 64-bit Snowflake ID packed into a 7-character Base62 code.
+
+### Editorial Project Presentation
+Rather than three equal cards in a row, projects are presented in an editorial layout (one large featured project, two stacked entries) with three distinct layers:
+1. **Layer A**: Plain English analogy.
+2. **Layer B**: 2–3 sentences on what was built.
+3. **Layer C**: Collapsible technical details, exact verified metrics, and stack tags.
+4. **Live Embedded Demos**: Functional controls to crash the leader, inject bank timeouts, and generate shortened links directly on the page.
+
+---
+
+## 3. Verified Benchmark Numbers (Simulated Tests)
+
+All metrics displayed across the portfolio represent empirical results from the owner's simulated tests:
+
+| System | Verified Metric | Test Context |
+| :--- | :--- | :--- |
+| **Payment Engine** | All 8 checks passed in 1 pass | Composed predicate chain evaluation |
+| **Payment Engine** | Zero duplicate charges | 10,000 concurrent retry attempts |
+| **Payment Engine** | 100% rejection | 50+ out-of-order illegal state transitions |
+| **Payment Engine** | ~300ms compensation | Downstream gateway timeout rollback |
+| **Payment Engine** | Zero net drift ($0.00) | 5,000+ double-entry ledger records |
+| **Message Broker** | Zero acknowledged loss | 50+ leader failure cycles |
+| **Message Broker** | ~750ms recovery | Write-availability restoration |
+| **Message Broker** | Zero duplicates | 10,000 simulated producer retries |
+| **Message Broker** | <200ms rebalance | Partition reassignment across 5 nodes |
+| **URL Shortener** | 1,000,000 collision-free codes | Continuous Snowflake stress test |
+| **URL Shortener** | Sub-50ms redirects | 5,000 events/second with Redis cache-aside |
+| **URL Shortener** | 92% bot detection | Synthetic crawler traffic classification |
+
+---
+
+## 4. How to Edit Content per Audience Level
+
+All portfolio copy is centralized in a single typed content file:
+`src/lib/content/portfolioContent.ts`
+
+To update copy for any project, hero statement, or story stop, locate the corresponding object and edit the `simple`, `recruiter`, or `engineer` property:
+
+```typescript
+headline: {
+  simple: "Behind-the-scenes systems built so apps never crash...",
+  recruiter: "Backend & Distributed Systems Engineer specializing in fault tolerance...",
+  engineer: "Designing idempotent transaction engines, Raft consensus brokers..."
+}
 ```
 
----
-
-## Remaining [PLACEHOLDER] Items (Pre-Launch Checklist)
-
-In strict adherence to the project guardrails, the following items are explicitly marked as placeholders pending production links:
-
-- [ ] **GitHub Repository URLs**:
-  - Distributed Message Broker repo: `[PLACEHOLDER]`
-  - Payment Engine / Movie Booking repo: `[PLACEHOLDER]`
-  - URL Shortener repo: `[PLACEHOLDER]`
-- [ ] **Real Strix Security Audit**:
-  - The Security Node is currently marked as `[PLACEHOLDER: PENDING REAL STRIX AUDIT]` in compliance with Rule #33. Execute `strix` against Rishi's production repository and populate actual findings prior to public launch.
-- [ ] **Contact Email Dispatch**:
-  - Production deployment should wire `RESEND_API_KEY` in environment variables for live SMTP email dispatch.
+TypeScript ensures that all three versions are present and properly typed.
 
 ---
 
-## Running Locally
+## 5. Running & Testing Locally
 
 ```bash
 # Clone the repository
@@ -96,24 +108,46 @@ cd RishiRaj_Portfolio
 # Install dependencies
 npm install
 
-# Run unit tests
+# Run all simulation unit tests (Message Broker, Saga FSM, Snowflake Base62, Break-it demo)
 npm test
 
-# Run Next.js local development server
+# Run development server
 npm run dev
-```
 
-Visit `http://localhost:3000` to pilot the probe through UPLINK.
-
-### Production Build
-
-```bash
+# Build production bundle (SSG / SSR validation)
 npm run build
-npm run start
 ```
 
 ---
 
-## License
+## 6. Screenshot Regeneration Script
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+Project previews can be captured at 1440x900 using the committed Playwright script:
+
+```bash
+# Run screenshot capture script
+node scripts/capture-screenshots.mjs
+```
+
+Screenshots are saved directly to `/public/projects/`.
+
+---
+
+## 7. Remaining [PLACEHOLDER] Items Checklist
+
+The following items are designated placeholders for the owner to drop in:
+
+- [ ] **Owner's Headshot Photo**: Drop `rishi.jpg` into `/public/rishi.jpg`. The site automatically detects it and crops it to a plain rectangle with a 1px border.
+- [ ] **About Paragraph**: Personalize `PORTFOLIO_CONTENT.about.paragraph` in `src/lib/content/portfolioContent.ts` with Rishi's exact words.
+- [ ] **Target Roles**: Adjust `PORTFOLIO_CONTENT.personal.openToRoles` if new roles or target locations are desired.
+- [ ] **Message Broker Repository**: Replace the private repository note with the public URL when open-sourced.
+- [ ] **URL Shortener Repository**: Replace the private repository note with the public URL when open-sourced.
+- [ ] **Strix Penetration Audit**: Run `strix` against Rishi's production repository and populate actual findings in `PORTFOLIO_CONTENT.securityStatus`.
+- [ ] **Production Email API Key**: Set `RESEND_API_KEY` in environment variables (`.env.local`) for live email delivery via `POST /api/contact`.
+- [ ] **Custom Domain**: Bind custom domain to Vercel/Netlify hosting configuration.
+
+---
+
+## 8. License
+
+MIT License • Copyright (c) 2026 Rishi Raj.

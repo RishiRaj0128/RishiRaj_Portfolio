@@ -13,12 +13,12 @@ export default function BootLoader({ progress, statusText, onComplete }: BootLoa
     "INITIALIZING UPLINK 3D RUNTIME ENVIRONMENT...",
     "DETECTING WEBGL2 CONTEXT & RENDER CAPABILITIES...",
   ]);
+  const [prevStatus, setPrevStatus] = useState(statusText);
 
-  useEffect(() => {
-    if (statusText) {
-      setLogs((prev) => [...prev.slice(-6), statusText]);
-    }
-  }, [statusText]);
+  if (statusText && statusText !== prevStatus) {
+    setPrevStatus(statusText);
+    setLogs((prev) => [...prev.slice(-6), statusText]);
+  }
 
   useEffect(() => {
     if (progress >= 100) {

@@ -31,7 +31,7 @@ export default function SecurityOverlay() {
           PRE-LAUNCH AUDIT CONSTRAINT (RULE #33)
         </div>
         <p className="text-[11px] font-sans text-[#878F99] leading-relaxed">
-          In strict compliance with repository constraints, this node will remain marked as a placeholder until an actual automated penetration audit is executed against Rishi's production repository using the open-source Strix scanner (github.com/usestrix/strix). No simulated or fabricated vulnerabilities are published as real.
+          In strict compliance with repository constraints, this node will remain marked as a placeholder until an actual automated penetration audit is executed against Rishi&apos;s production repository using the open-source Strix scanner (github.com/usestrix/strix). No simulated or fabricated vulnerabilities are published as real.
         </p>
         <div className="pt-1">
           <a
