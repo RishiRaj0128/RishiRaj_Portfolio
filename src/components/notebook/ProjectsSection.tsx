@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useAudience } from "./AudienceContext";
 import { PORTFOLIO_CONTENT } from "@/lib/content/portfolioContent";
 import { PaymentEngineDemo } from "./demos/PaymentEngineDemo";
@@ -10,6 +11,7 @@ import { BankBlueprint, QueueBlueprint, ReceiptBlueprint } from "./illustrations
 
 export function ProjectsSection() {
   const { audienceMode } = useAudience();
+  const [paymentView, setPaymentView] = useState<"preview" | "blueprint">("preview");
   const [detailsOpen, setDetailsOpen] = useState<Record<string, boolean>>({
     payment: false,
     broker: false,
@@ -116,18 +118,64 @@ export function ProjectsSection() {
             {/* Visual Frame & Blueprint Graphic */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               
-              {/* Illustration Frame */}
-              <div className="lg:col-span-7 p-3 sm:p-4 bg-[var(--color-surface)] border border-[var(--color-border-default)] rounded-[2px] space-y-2">
-                <BankBlueprint className="w-full h-52 sm:h-64 text-[var(--color-text-primary)]" />
+              {/* Illustration & Live Preview Frame */}
+              <div className="lg:col-span-7 p-3 sm:p-4 bg-[var(--color-surface)] border border-[var(--color-border-default)] rounded-[2px] space-y-3">
+                {/* View switcher: Live App vs Architecture Sketch */}
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--color-border-subtle)] text-xs font-mono">
+                  <div className="flex items-center gap-1.5 bg-[var(--color-card)] p-0.5 rounded-[2px] border border-[var(--color-border-default)]">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentView("preview")}
+                      className={`px-2.5 py-1 text-xs rounded-[1px] transition-colors ${
+                        paymentView === "preview"
+                          ? "bg-[var(--color-surface)] text-[var(--color-accent)] font-bold border border-[var(--color-border-active)]"
+                          : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+                      }`}
+                    >
+                      Live UI Preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentView("blueprint")}
+                      className={`px-2.5 py-1 text-xs rounded-[1px] transition-colors ${
+                        paymentView === "blueprint"
+                          ? "bg-[var(--color-surface)] text-[var(--color-accent)] font-bold border border-[var(--color-border-active)]"
+                          : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+                      }`}
+                    >
+                      Architecture Sketch
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-[var(--color-text-tertiary)] hidden sm:inline">
+                    {paymentView === "preview" ? "1440x900 WebP" : "Vector Schematic"}
+                  </span>
+                </div>
+
+                {/* Content View */}
+                {paymentView === "preview" ? (
+                  <div className="relative aspect-[16/10] w-full rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)] bg-[var(--color-card)]">
+                    <Image
+                      src="/projects/cinebook-preview.webp"
+                      alt="Cinebook Movie Booking Application - Live Interface"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 600px"
+                      className="object-cover object-top"
+                    />
+                  </div>
+                ) : (
+                  <BankBlueprint className="w-full h-52 sm:h-64 text-[var(--color-text-primary)]" />
+                )}
+
                 <div className="flex items-center justify-between text-[11px] font-mono text-[var(--color-text-tertiary)] pt-1 border-t border-[var(--color-border-subtle)]">
-                  <span>ARCHITECTURE SKETCH // SAGA ORCHESTRATION</span>
+                  <span>{paymentView === "preview" ? "CINEBOOK PRODUCTION UI" : "SAGA ORCHESTRATION"}</span>
                   <a
                     href={paymentProject.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--color-accent)] hover:underline"
+                    className="text-[var(--color-accent)] hover:underline inline-flex items-center gap-1"
                   >
-                    Live app: coruscating-eclair-2724dd.netlify.app ↗
+                    <span>coruscating-eclair-2724dd.netlify.app</span>
+                    <span aria-hidden="true">↗</span>
                   </a>
                 </div>
               </div>

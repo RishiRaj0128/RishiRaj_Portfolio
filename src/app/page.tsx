@@ -1,4 +1,5 @@
-import React from "react";
+import fs from "fs";
+import path from "path";
 import { AudienceProvider } from "@/components/notebook/AudienceContext";
 import { Header } from "@/components/notebook/Header";
 import { Hero } from "@/components/notebook/Hero";
@@ -11,6 +12,9 @@ import { ContactSection } from "@/components/notebook/ContactSection";
 import { Footer } from "@/components/notebook/Footer";
 
 export default function HomePage() {
+  const photoPath = path.join(process.cwd(), "public", "rishi.jpg");
+  const hasPhoto = fs.existsSync(photoPath);
+
   return (
     <AudienceProvider>
       {/* Accessible skip link */}
@@ -26,7 +30,7 @@ export default function HomePage() {
 
       {/* Main Content Sections */}
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
-        <Hero />
+        <Hero hasPhoto={hasPhoto} />
         <ScrollStory />
         <ProjectsSection />
         <SkillsSection />

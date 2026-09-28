@@ -74,9 +74,6 @@ export function TimelineSecurity() {
                     {PORTFOLIO_CONTENT.securityStatus.statusBadge}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-[var(--color-text-tertiary)]">
-                  ZERO INVENTED FINDINGS
-                </span>
               </div>
 
               {/* Description */}
@@ -108,7 +105,7 @@ export function TimelineSecurity() {
 
               {/* Tool reference */}
               <div className="pt-2 border-t border-[var(--color-border-subtle)] text-xs font-mono text-[var(--color-text-tertiary)] flex items-center justify-between">
-                <span>Scanner: Strix Pentest Suite</span>
+                <span>Planned: automated security audit (Strix)</span>
                 <a
                   href="https://github.com/usestrix/strix"
                   target="_blank"

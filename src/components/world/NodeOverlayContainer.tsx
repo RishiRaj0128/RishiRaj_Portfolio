@@ -55,7 +55,7 @@ export default function NodeOverlayContainer({ dockedNode, onUndock }: NodeOverl
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative w-full max-w-4xl bg-[#111317] border border-[#2D3440] rounded-[2px] max-h-[88vh] flex flex-col z-10 shadow-none overflow-hidden my-auto"
+            className="relative w-full max-w-4xl bg-[#111317] border border-[#2D3440] rounded-[2px] max-h-[88vh] flex flex-col z-10 overflow-hidden my-auto"
           >
             {/* Top Dock Header Bar */}
             <div className="p-3 sm:p-4 bg-[#171B22] border-b border-[#1F242C] flex justify-between items-center text-xs font-mono">

@@ -4,8 +4,11 @@ import React from "react";
 import Link from "next/link";
 
 export function Footer() {
-  const commitHash = "58ad60e";
-  const buildDate = "September 28, 2026";
+  const commitHash =
+    (process.env.VERCEL_GIT_COMMIT_SHA
+      ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)
+      : process.env.NEXT_PUBLIC_COMMIT_SHA) || "dev";
+  const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE || "September 28, 2026";
 
   return (
     <footer className="py-12 bg-[var(--color-surface)] border-t border-[var(--color-border-default)] transition-colors duration-200">

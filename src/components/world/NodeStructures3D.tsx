@@ -357,7 +357,7 @@ export default function NodeStructures3D({
               <div
                 className={`flex flex-col items-center px-2 py-1 rounded-[2px] border text-center transition-all ${
                   isCurrent
-                    ? "bg-[#111317] border-[#C86D32] shadow-none"
+                    ? "bg-[#111317] border-[#C86D32]"
                     : isVisited
                     ? "bg-[#111317]/95 border-[#8F4B1E]"
                     : "bg-[#0A0B0D]/90 border-[#1F242C]"

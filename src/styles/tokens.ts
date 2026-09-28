@@ -6,12 +6,12 @@
  * 1. Background (#0A0B0D range): Deliberately chose near-black over pure white (#ffffff) or default neutral grays
  *    to evoke mission-critical NOC/SRE monitor screens.
  * 2. Accent (#C86D32 Muted Burnt Amber): Exactly ONE desaturated, functional accent color. Rejected neon cyan/greens,
- *    pastels, and purple-black gradients which look AI-generated and generic.
+ *    pastels, and purple-black color shifts which look AI-generated and generic.
  * 3. Elevation via 1px border (#1F242C) and 3% background luminosity step (#12151A), NOT drop shadows.
  *    Shadows blur boundaries and feel consumer/app-like; 1px borders feel like industrial terminal hardware.
  * 4. Corner Radius (2px - 4px max): Rejected oversized rounded corners (16px+) in favor of crisp, engineered corners.
  * 5. Monospace Priority: IBM Plex Mono for all system data, telemetry, latencies, PIDs, and code.
- *    Primary Sans: Public Sans for headings and structural copy (strictly rejected Inter, Geist, and Space Grotesk).
+ *    Primary Sans: Public Sans for headings and structural copy (strictly rejected default generic typography).
  */
 
 export const TOKENS = {

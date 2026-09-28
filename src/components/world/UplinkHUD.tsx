@@ -53,7 +53,7 @@ export default function UplinkHUD({
   return (
     <div className="fixed inset-0 pointer-events-none z-30 font-mono select-none flex flex-col justify-between p-3 sm:p-5">
       {/* TOP HEADER / STATUS BAR */}
-      <header className="pointer-events-auto flex flex-wrap justify-between items-center bg-[#111317]/90 border border-[#1F242C] rounded-[2px] px-3 py-2 text-xs backdrop-blur-none gap-2">
+      <header className="pointer-events-auto flex flex-wrap justify-between items-center bg-[#111317]/90 border border-[#1F242C] rounded-[2px] px-3 py-2 text-xs gap-2">
         {/* Brand / System Identity */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
@@ -190,7 +190,7 @@ export default function UplinkHUD({
       <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
         {/* TCP HANDSHAKE DOCKING SEQUENCE (SYN -> SYN-ACK -> ACK) */}
         {handshakeState ? (
-          <div className="pointer-events-auto bg-[#111317]/95 border border-[#C86D32] px-5 py-3 rounded-[2px] text-xs max-w-md w-full shadow-none space-y-2">
+          <div className="pointer-events-auto bg-[#111317]/95 border border-[#C86D32] px-5 py-3 rounded-[2px] text-xs max-w-md w-full space-y-2">
             <div className="flex justify-between items-center border-b border-[#1F242C] pb-1 text-[10px] text-[#C86D32] font-bold">
               <span>TCP TRANSPORT HANDSHAKE</span>
               <span>{handshakeState.node.port}</span>

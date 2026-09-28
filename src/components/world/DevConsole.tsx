@@ -309,7 +309,7 @@ Dispatching contract authorization conduit. Opening contact ingress...`,
       role="dialog"
       aria-label="Developer In-Fiction Console"
       aria-modal="true"
-      className="fixed inset-0 z-50 bg-[#0A0B0D]/85 flex flex-col justify-start p-4 sm:p-8 font-mono backdrop-blur-none"
+      className="fixed inset-0 z-50 bg-[#0A0B0D]/85 flex flex-col justify-start p-4 sm:p-8 font-mono"
     >
       <div className="w-full max-w-4xl mx-auto bg-[#111317] border border-[#2D3440] rounded-[2px] flex flex-col h-[75vh] max-h-[700px] overflow-hidden">
         {/* Console Header Bar */}

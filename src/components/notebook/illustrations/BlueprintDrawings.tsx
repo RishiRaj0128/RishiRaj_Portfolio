@@ -211,49 +211,49 @@ export function CheckBlueprint({ className = "w-full h-44" }: BlueprintProps) {
       <g transform="translate(118, 66)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          1. Seat Lock ✓
+          1. Seat Lock [OK]
         </text>
       </g>
       <g transform="translate(196, 66)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          2. Solvency ✓
+          2. Solvency [OK]
         </text>
       </g>
       <g transform="translate(118, 86)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          3. Session TTL ✓
+          3. Session TTL [OK]
         </text>
       </g>
       <g transform="translate(196, 86)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          4. Amount Bounds ✓
+          4. Amount Bounds [OK]
         </text>
       </g>
       <g transform="translate(118, 106)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          5. Idempotency ✓
+          5. Idempotency [OK]
         </text>
       </g>
       <g transform="translate(196, 106)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          6. Showtime Win ✓
+          6. Showtime Win [OK]
         </text>
       </g>
       <g transform="translate(118, 126)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          7. Theater Ping ✓
+          7. Theater Ping [OK]
         </text>
       </g>
       <g transform="translate(196, 126)">
         <rect x="0" y="0" width="70" height="16" rx="1.5" fill="var(--color-base)" stroke="var(--color-status-ok)" strokeWidth="1" />
         <text x="35" y="11" textAnchor="middle" fill="var(--color-status-ok)" fontSize="6.5" fontFamily="var(--font-mono)">
-          8. Fraud Score ✓
+          8. Fraud Score [OK]
         </text>
       </g>
 

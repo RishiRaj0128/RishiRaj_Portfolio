@@ -7,9 +7,8 @@ import { PORTFOLIO_CONTENT } from "@/lib/content/portfolioContent";
 import { AmberUnderline } from "./illustrations/BlueprintDrawings";
 import { runBreakItSimulation, BreakItResult } from "@/lib/simulations/breakItSimulation";
 
-export function Hero() {
+export function Hero({ hasPhoto = false }: { hasPhoto?: boolean }) {
   const { audienceMode } = useAudience();
-  const [photoExists, setPhotoExists] = useState<boolean>(true);
   const [simState, setSimState] = useState<"idle" | "running" | "crashed">("idle");
   const [breakItData, setBreakItData] = useState<BreakItResult | null>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(() =>
@@ -77,9 +76,9 @@ export function Hero() {
                 </p>
               </div>
 
-              {/* Photo slot (cropped plain rectangle, 3px radius, 1px border; graceful fallback if absent) */}
-              {photoExists && (
-                <div className="relative w-28 h-36 sm:w-32 sm:h-40 shrink-0 rounded-[3px] border border-[var(--color-border-default)] overflow-hidden bg-[var(--color-surface)] shadow-sm">
+              {/* Photo slot (cropped plain rectangle, 3px radius, 1px border; graceful fallback if absent at build time) */}
+              {hasPhoto && (
+                <div className="relative w-28 h-36 sm:w-32 sm:h-40 shrink-0 rounded-[3px] border border-[var(--color-border-default)] overflow-hidden bg-[var(--color-surface)]">
                   <Image
                     src="/rishi.jpg"
                     alt="Rishi Raj - Backend & Distributed Systems Engineer"
@@ -87,7 +86,6 @@ export function Hero() {
                     priority
                     sizes="(max-width: 640px) 112px, 128px"
                     className="object-cover"
-                    onError={() => setPhotoExists(false)}
                   />
                 </div>
               )}

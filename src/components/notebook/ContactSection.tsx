@@ -208,8 +208,9 @@ export function ContactSection() {
                   </button>
 
                   {status === "success" && (
-                    <span className="font-mono text-xs text-[var(--color-status-ok)]">
-                      ✓ {feedback}
+                    <span className="font-mono text-xs text-[var(--color-status-ok)] flex items-center gap-1.5">
+                      <span className="inline-block w-2 h-2 bg-[var(--color-status-ok)] shrink-0" />
+                      {feedback}
                     </span>
                   )}
                   {status === "error" && (

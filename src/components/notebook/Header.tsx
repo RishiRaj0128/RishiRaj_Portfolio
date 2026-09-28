@@ -27,7 +27,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[var(--color-base)]/95 backdrop-blur-sm border-b border-[var(--color-border-default)] transition-colors duration-200">
+    <header className="sticky top-0 z-40 w-full bg-[var(--color-base)] border-b border-[var(--color-border-default)] transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
         {/* Left: Identity */}
         <div className="flex items-center gap-3 min-w-0">

@@ -28,7 +28,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
+  title: "Rishi Raj : Backend Distributed Systems & Fault Tolerance",
   description:
     "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
   keywords: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
+    title: "Rishi Raj : Backend Distributed Systems & Fault Tolerance",
     description:
       "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
     type: "website",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rishi Raj — Backend Distributed Systems & Fault Tolerance",
+    title: "Rishi Raj : Backend Distributed Systems & Fault Tolerance",
     description:
       "Rishi builds the behind-the-scenes systems that keep apps from crashing, losing data, or charging customers twice.",
   },

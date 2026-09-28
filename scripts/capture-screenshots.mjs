@@ -31,15 +31,24 @@ async function capture() {
   }
 
   console.log('Launching browser for project captures...');
-  const browser = await chromium.launch();
+  let browser;
+  try {
+    browser = await chromium.launch({ channel: 'msedge' });
+  } catch {
+    try {
+      browser = await chromium.launch({ channel: 'chrome' });
+    } catch {
+      browser = await chromium.launch();
+    }
+  }
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
   // 1. Cinebook Movie Booking Frontend
   const cinebookUrl = 'https://coruscating-eclair-2724dd.netlify.app/';
   console.log(`Warming up and capturing ${cinebookUrl}...`);
   try {
-    await page.goto(cinebookUrl, { waitUntil: 'networkidle', timeout: 30000 });
-    await page.waitForTimeout(2000);
+    await page.goto(cinebookUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForTimeout(4000);
     const cinebookPath = path.join(outputDir, 'cinebook-preview.webp');
     await page.screenshot({ path: cinebookPath, type: 'webp', quality: 85 });
     console.log(`Saved screenshot to ${cinebookPath}`);

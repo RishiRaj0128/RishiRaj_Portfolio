@@ -116,7 +116,7 @@ export function ScrollStory() {
                   data-story-stop
                   className={`p-5 sm:p-6 md:p-8 bg-[var(--color-card)] border rounded-[3px] transition-all duration-200 ${
                     isCurrent
-                      ? "border-[var(--color-border-active)] shadow-sm"
+                      ? "border-[var(--color-border-active)]"
                       : "border-[var(--color-border-default)] opacity-95"
                   }`}
                 >
